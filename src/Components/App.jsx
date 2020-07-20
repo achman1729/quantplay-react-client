@@ -1,15 +1,22 @@
 import React from "react"
-import "./App.css"
+import { BrowserRouter, Route, Switch } from "react-router-dom"
 import Watchlist from "./Watchlist"
 import Portfolio from "./Portfolio"
 import Post from "./Post"
-import Navbar from "./Navbar"
+import Header from "./Header"
 
 function App() {
   return (
-    <div>
-      <h1>Hello world</h1>
-    </div>
+    <>
+    <BrowserRouter>
+      <Header />
+      <Switch>
+        <Route exact path="/watchlist" component={Watchlist} />
+        <Route exact path="/portfolio" component={Portfolio} />
+        <Route exact path="/post" component={Post} />
+      </Switch>
+    </BrowserRouter>
+    </>
   )
 }
 

@@ -33,3 +33,10 @@
   .navbar__link--active {
     color: orange;
   }
+
+  .search-bar {
+    display: flex;
+    justify-content: center;
+    align-self: center;
+    margin-left: 5em;
+  }

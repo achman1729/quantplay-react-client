@@ -10,6 +10,7 @@ function ApiGet(symbol, dateStr1, dateStr2) {
     
     // save returned data as an object, example as in sampleJSON file
     let temp = null
+    let tempMeta = null
 
 
     // uncomment this part to call real api, or use sampleJSON.json to test and save extra api calls
@@ -24,7 +25,10 @@ function ApiGet(symbol, dateStr1, dateStr2) {
     // meta info such as description could be acquired
     // let apiMeta = fetch(tiingoMeta)
     //     .then(data => {return data.json()})
-    //     .then(res => {console.log(res.description)})
+    //     .then(res => {
+    //                     // console.log(res)
+    //                     tempMeta = res       
+    //         })
     //     .catch(err => {console.log(err)})
 
 
@@ -60,7 +64,13 @@ function ApiGet(symbol, dateStr1, dateStr2) {
         collection: sortedVolumeCollection
     })
 
-    return {'series': series, 'seriesVolume': seriesVolume}
+    // meta data example
+    tempMeta = require('./sampleMeta.json') // comment this line and uncomment api call to fetch from api server
+    const description = tempMeta.description
+    const companyName = tempMeta.name
+    const ticker = tempMeta.ticker
+
+    return {'series': series, 'seriesVolume': seriesVolume, 'companyName': companyName, 'ticker': ticker, 'description': description}
     // to call the chart component, use the following code in other components
     // const ele = <PriceVol series={series} seriesVolume={seriesVolume} />
 }

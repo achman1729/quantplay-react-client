@@ -13,12 +13,12 @@ export default function CardStock() {
             <Container fluid className="text-center bg-light p-1 border border-warning rounded-lg">
                 <Row className="p-2">
                     <Col xs={3} id="symbol" className="h1 ">{ticker}</Col>
-                    <Col xs={5} id="rtprice" className="h1 display-4 text-success">123.45 usd</Col>
-                    <Col xs={1} className="justify-content-end" id="rmbutton"><Button variant="outline-warning" size="xs" className="p-1">remove</Button></Col>
+                    <Col xs={7} id="rtprice" className="h1 display-4 text-success">{series.atLast().get("close")}</Col>
+                    <Col xs={1} className="justify-content-end"><Button variant="outline-warning" size="xs" className="p-1">remove</Button></Col>
                 </Row>
                 <Row>
-                    <Col xs={3} id="logo">Company Logo</Col>
-                    <Col xs={6}>
+                    <Col xs={3} className="justify-content-center h3">{companyName}</Col>
+                    <Col xs={9}>
                         <Row className="h1">
                             <Col id="rtday"> 1.00% </Col><Col id="rtmonth"> 2.00% </Col><Col id="rtyear"> 3.00% </Col>
                         </Row>
@@ -28,11 +28,8 @@ export default function CardStock() {
                     </Col>
                 </Row>
                 <Row>
-                    <Col xs={3} id="wiki">
-                        <Row className="justify-content-center">{companyName}</Row>
-                        <Row className="font-italic small text-wrap text-truncate">{description}</Row>
-                    </Col>
-                    <Col id="chart"><PriceVol series={series} seriesVolume={seriesVolume}/></Col>
+                    <Col xs={3} className="font-italic small text-wrap scroll">{description}</Col>
+                    <Col id="chart" xs={9}><PriceVol series={series} seriesVolume={seriesVolume}/></Col>
                 </Row>
             </Container>
 

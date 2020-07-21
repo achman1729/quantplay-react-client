@@ -1,7 +1,6 @@
 import moment from "moment"
-import { Collection, TimeSeries, TimeEvent, IndexedEvent, TimeRange } from "pondjs"
+import { Collection, TimeSeries, TimeEvent, TimeRange, IndexedEvent } from "pondjs"
 
-import aapl from "./sampleJSON.json"
 
 // fetch data from tiingo api
 function ApiGet(symbol, dateStr1, dateStr2) {
@@ -30,7 +29,7 @@ function ApiGet(symbol, dateStr1, dateStr2) {
 
 
     // building timeseries
-    import stockSeries from "./sampleJSON.json" // sample in tiingo format for test
+    const stockSeries = require("./sampleJSON.json") // sample in tiingo format for test
     // const stockSeries = temp // fetch from tiingo api
 
     // to series as a TimeSeries of (close)price info
@@ -49,11 +48,9 @@ function ApiGet(symbol, dateStr1, dateStr2) {
     
     // to seriesVolumn as a TimeSeries of volumn info
     const volumeEvents = stockSeries.map(item => {
-        const timestamp = moment(new Date(item.date))
-        const { close } = item
-        return new TimeEvent(timestamp.toDate(), {
-            close: +close
-        })
+        const index = item.date.replace(/\//g, "-")
+        const { volume } = item
+        return new IndexedEvent(index, { volume: +volume })
     })
     const volumeCollection = new Collection(volumeEvents);
     const sortedVolumeCollection = volumeCollection.sortByTime()

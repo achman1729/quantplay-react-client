@@ -129,11 +129,11 @@ class PriceVol extends React.Component {
                         min={croppedSeries.min("close")}
                         max={croppedSeries.max("close")}
                         format=",.0f"
-                        width="60"
+                        width="40"
                         type={this.state.mode}
                     />
                 </ChartRow>
-                <ChartRow height="200" axisMargin={0}>
+                <ChartRow height="100" axisMargin={0}>
                     <Charts>
                         <BarChart
                             axis="y" 
@@ -148,7 +148,7 @@ class PriceVol extends React.Component {
                         label="Volume"
                         min={croppedVolumeSeries.min("volume")}
                         max={croppedVolumeSeries.max("volume")}
-                        width="60"
+                        width="40"
                     />
                 </ChartRow>
             </ChartContainer>
@@ -157,21 +157,9 @@ class PriceVol extends React.Component {
 
     render(props) {
         return (
-            <div>
-                <div className="row">
-                    <div className="col-md-12">
-                        <h3>Apple stock price</h3>
-                    </div>
-                </div>
-
-                <hr />
-
-                <div className="row">
                     <div className="col-md-12">
                         <Resizable>{this.renderChart(props)}</Resizable>
                     </div>
-                </div>
-            </div>
         )
     }
 }

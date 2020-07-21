@@ -1,9 +1,12 @@
 import React from 'react'
+import CardStock from './Card'
 
 export default function Watchlist() {
     return (
         <div>
-            Watchlist
+            <CardStock />
+            <CardStock />
+            <CardStock />
         </div>
     )
 }

@@ -1,7 +1,6 @@
 import moment from "moment"
-import { Collection, TimeSeries, TimeEvent, IndexedEvent, TimeRange } from "pondjs"
+import { Collection, TimeSeries, TimeEvent, TimeRange, IndexedEvent } from "pondjs"
 
-import aapl from "./sampleJSON.json"
 
 // fetch data from tiingo api
 function ApiGet(symbol, dateStr1, dateStr2) {
@@ -11,6 +10,7 @@ function ApiGet(symbol, dateStr1, dateStr2) {
     
     // save returned data as an object, example as in sampleJSON file
     let temp = null
+    let tempMeta = null
 
 
     // uncomment this part to call real api, or use sampleJSON.json to test and save extra api calls
@@ -25,12 +25,15 @@ function ApiGet(symbol, dateStr1, dateStr2) {
     // meta info such as description could be acquired
     // let apiMeta = fetch(tiingoMeta)
     //     .then(data => {return data.json()})
-    //     .then(res => {console.log(res.description)})
+    //     .then(res => {
+    //                     // console.log(res)
+    //                     tempMeta = res       
+    //         })
     //     .catch(err => {console.log(err)})
 
 
     // building timeseries
-    import stockSeries from "./sampleJSON.json" // sample in tiingo format for test
+    const stockSeries = require("./sampleJSON.json") // sample in tiingo format for test
     // const stockSeries = temp // fetch from tiingo api
 
     // to series as a TimeSeries of (close)price info
@@ -49,11 +52,9 @@ function ApiGet(symbol, dateStr1, dateStr2) {
     
     // to seriesVolumn as a TimeSeries of volumn info
     const volumeEvents = stockSeries.map(item => {
-        const timestamp = moment(new Date(item.date))
-        const { close } = item
-        return new TimeEvent(timestamp.toDate(), {
-            close: +close
-        })
+        const index = item.date.replace(/\//g, "-")
+        const { volume } = item
+        return new IndexedEvent(index, { volume: +volume })
     })
     const volumeCollection = new Collection(volumeEvents);
     const sortedVolumeCollection = volumeCollection.sortByTime()
@@ -63,7 +64,13 @@ function ApiGet(symbol, dateStr1, dateStr2) {
         collection: sortedVolumeCollection
     })
 
-    return {'series': series, 'seriesVolume': seriesVolume}
+    // meta data example
+    tempMeta = require('./sampleMeta.json') // comment this line and uncomment api call to fetch from api server
+    const description = tempMeta.description
+    const companyName = tempMeta.name
+    const ticker = tempMeta.ticker
+
+    return {'series': series, 'seriesVolume': seriesVolume, 'companyName': companyName, 'ticker': ticker, 'description': description}
     // to call the chart component, use the following code in other components
     // const ele = <PriceVol series={series} seriesVolume={seriesVolume} />
 }

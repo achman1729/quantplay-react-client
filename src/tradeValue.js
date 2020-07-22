@@ -4,25 +4,20 @@
 // each new trade should be after all previously existing trades
 // trade could be long(buy) or short(sell), within limits of current position at the day
 
-// pool is an array of stocks
-// pool = ['aapl','msft','googl']
-
-// orders is history of trade long/short stocks within the pool
 
 const limitShort = 1 // set the maximum percentage of (cash + holding) used to short is 100%
 
 // Trade is about trading stocks within current pool at specific date
-// values is evaluation of previous date, value could be negative (short, borrowing stock with immediate sell, profit when return shares later at lower price)
+// values is evaluation of stock with close price, value could be negative (short, borrowing stock with immediate sell, profit when return shares later at lower price)
 // value = amount * price at each day, amount is integer
-// date is the day of trading action, using close price by default
 class Trade {
     constructor(pool, values, amounts, csh, date, prices) {
         this.pool = pool // ex. ['aapl','msft','googl']
-        this.values = values // ex. {date: new Date("2018-12-31T00:00:00.000Z"), close: {"aapl": 12345.67,"msft": 22345.67,"googl": 32345.67}}
-        this.amounts = amounts // ex. {date: new Date("2018-12-31T00:00:00.000Z"), close: {"aapl": 12345,"msft": 22345,"googl": 32345}}
+        this.values = values // ex. {date: new Date("2018-12-31T00:00:00.000Z"), close: {"aapl": 12345.67, "msft": 22345.67, "googl": 32345.67}}
+        this.amounts = amounts // ex. {date: new Date("2018-12-31T00:00:00.000Z"), close: {"aapl": 12345, "msft": 22345, "googl": 32345}}
         this.cash = csh // ex. {date: new Date("2018-12-31T00:00:00.000Z"), close: 100000}
         this.date = date // ex. new Date("2018-12-31")
-        this.prices = prices // ex. {date: new Date("2018-12-31T00:00:00.000Z"), close: {"aapl": 123,"msft": 223,"googl": 323}}
+        this.prices = prices // ex. {date: new Date("2018-12-31T00:00:00.000Z"), close: {"aapl": 123, "msft": 223, "googl": 323}}
         this.trades = [] // records of finished trade
     }
 
@@ -69,19 +64,21 @@ class Trade {
 }
 
 // Fund is the class representing data of portofolio
+// Fund contains sorted arrays of information
+// prices, values, amounts, cash are arrays of objects, in ascending order of date, with the same arrays of date property
+// trades is sorted array of objects, in the form as of Trade.eval().trades
 class Fund {
-    // assume sequences are sorted by date
     constructor(pool, values, amounts, cash, dateBegin, prices, trades) {
         this.pool = pool // ex. ['aapl','msft','googl']
-        this.values = values // ex. [{date: new Date("2018-12-31T00:00:00.000Z"), close: {"aapl": 12345.67,"msft": 22345.67,"googl": 32345.67}}, ...]
-        this.amounts = amounts // ex. [{date: new Date("2018-12-31T00:00:00.000Z"), close: {"aapl": 12345,"msft": 22345,"googl": 32345}}, ...]
+        this.values = values // ex. [{date: new Date("2018-12-31T00:00:00.000Z"), close: {"aapl": 12345.67, "msft": 22345.67, "googl": 32345.67}}, ...]
+        this.amounts = amounts // ex. [{date: new Date("2018-12-31T00:00:00.000Z"), close: {"aapl": 12345, "msft": 22345, "googl": 32345}}, ...]
         this.cash = cash // ex. [{date: new Date("2018-12-31T00:00:00.000Z"), close: 100000}, ...]
         this.dateBegin = dateBegin // ex. new Date("2018-12-31")
-        this.prices = prices // ex. [{date: new Date("2018-12-31T00:00:00.000Z"), close: {"aapl": 123,"msft": 223,"googl": 323}}, ...]
+        this.prices = prices // ex. [{date: new Date("2018-12-31T00:00:00.000Z"), close: {"aapl": 123, "msft": 223, "googl": 323}}, ...]
         this.trades = trades // ex. [{ticker: "aapl", amount: 100, type: 'short', date: new Date("2019-1-4")}, ...]
     }
 
-    // for initialize a fund with specified amounts
+    // for initialize a fund with specified amounts in a concise way
     buildStatic(p, amts, csh, dtBegin, prices) { 
         // here amts (for amounts) is of form {ticker1: Number, ticker2: Number ...}
         // csh (for cash) is a Number
@@ -103,7 +100,6 @@ class Fund {
         }
         let fundInit = new Fund(p, vs, as, cs, dtBegin, prices, [])
         return fundInit
-
     }
 
     // trade at day t, if t is after the last of trades which have already taken place
@@ -132,7 +128,7 @@ class Fund {
 
 }
 
-
+// experiment along :)
 // testing Date string format
 // let d = new Date("2018-12-31T00:00:00.000Z")
 // let h = {'d': d.getFullYear().toString()+'-'+d.getMonth().toString()+'-'+d.getDay().toString()}

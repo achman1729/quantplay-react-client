@@ -29,6 +29,8 @@ class Trade {
                 this.amounts.close[ticker] += amount
                 this.values.close[ticker] += amount * this.prices.close[ticker]
                 this.trades.push({ticker: ticker, amount: amount, type: 'long', date: this.date})
+            } else {
+                console.log("Not enough cash to long for this percentage of cash value")
             }
         }
     }
@@ -42,6 +44,8 @@ class Trade {
                 this.amounts.close[ticker] -= amount
                 this.values.close[ticker] -= valShort
                 this.trades.push({ticker: ticker, amount: amount, type: 'short', date: this.date})
+            } else {
+                console.log("Not enough to short for this percentage of (cash + holding) value")
             }
         }
     }
@@ -124,6 +128,35 @@ class Fund {
                 }
             }
         }
+    }
+
+    val(t) { // evaluate totals of major categories at date t, ex. return {val: 12345, valLong: 10345, valShort: -2000, cash: 4000}
+        let total = 0
+        let totalLong = 0
+        let totalShort = 0
+
+        let ind = this.prices.findIndex((item) => item.date == t)
+        for (let [k, v] in Object.entries(this.values[ind].close)) {
+            if (v > 0) {
+                totalLong += v
+                total += v
+            } else {
+                totalShort += v
+                total += v + this.cash[ind].close
+            }
+        }
+        total +=  this.cash[ind].close
+        return {val: total, valLong: totalLong, valShort: totalShort, cash: this.cash[ind].close}
+    }
+
+    total(t) { // evaluate total at date t, ex. return 12345
+        let total = 0
+        let ind = this.prices.findIndex((item) => item.date == t)
+        for (let [k, v] in Object.entries(this.values[ind].close)) { 
+            total += v
+        }
+        total +=  this.cash[ind].close
+        return total
     }
 
 }

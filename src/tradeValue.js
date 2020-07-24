@@ -4,6 +4,7 @@
 // each new trade should be after all previously existing trades
 // trade could be long(buy) or short(sell), within limits of current position at the day
 
+const clone = require('rfdc')()
 
 const limitShort = 1 // set the maximum percentage of (cash + holding) used to short is 100%
 
@@ -19,6 +20,7 @@ class Trade {
         this.date = date // ex. new Date("2018-12-31")
         this.prices = prices // ex. {date: new Date("2018-12-31T00:00:00.000Z"), close: {"aapl": 123, "msft": 223, "googl": 323}}
         this.trades = [] // records of finished trade
+        
     }
 
     long(ticker, percentage) { // buy a stock, from percentage of cash value
@@ -35,15 +37,15 @@ class Trade {
         }
     }
 
-    short(ticker, percentage) { // short a stock, from percentage of (cash + values.close[ticker]) value
+    short(tic, percentage) { // short a stock, from percentage of (cash + values.close[ticker]) value
         if (percentage > 0 && percentage <= limitShort) {
-            let amount = Math.floor((this.cash.close + this.values.close[tinker]) * percentage / prices[ticker])
+            let amount = Math.floor((this.cash.close + this.values.close[tic]) * percentage / this.prices.close[tic])
             if (amount > 0) {
-                let valShort = amount * this.prices.close[ticker]              
+                let valShort = amount * this.prices.close[tic]              
                 this.cash.close += valShort
-                this.amounts.close[ticker] -= amount
-                this.values.close[ticker] -= valShort
-                this.trades.push({ticker: ticker, amount: amount, type: 'short', date: this.date})
+                this.amounts.close[tic] -= amount
+                this.values.close[tic] -= valShort
+                this.trades.push({ticker: tic, amount: amount, type: 'short', date: this.date})
             } else {
                 console.log("Not enough to short for this percentage of (cash + holding) value")
             }
@@ -56,9 +58,9 @@ class Trade {
         }
     }
 
-    shorts(tickers, percentages) { // short a sequence of stocks, one after one
-        for (let i = 0; i < tickers.length; i++) {
-            this.short(tickers[i], percentages[i])
+    shorts(tics, percentages) { // short a sequence of stocks, one after one
+        for (let i = 0; i < tics.length; i++) {
+            this.short(tics[i], percentages[i])
         }
     }
 
@@ -108,27 +110,69 @@ class Fund {
     }
 
     // trade at day t, if t is after the last of trades which have already taken place
-    addTrade(t, tickersLong, percentagesLong, tickersShort, percentagesShort) {
-        
+    addTradeStrict(t, tickersLong, percentagesLong, tickersShort, percentagesShort) {
         if ( this.trades.length == 0 || (this.trades.length > 0 && t > this.trades[this.trades.length - 1].date)) {
             let ind = this.cash.findIndex((item) => item.date == t)
             let tradeT = new Trade(this.pool, this.values[ind], this.amounts[ind], this.cash[ind], t, this.prices[ind])
             tradeT.longs(tickersLong, percentagesLong)
             tradeT.short(tickersShort, percentagesShort)
-            // update day t's data
-            ev = tradeT.eval()
+
+            let ev = tradeT.eval()
             this.values[ind] = ev.values
-            this.amounts[ind] = ev.amount
+            this.amounts[ind] = ev.amounts
             this.cash[ind] = ev.cash
-            this.trades.push(ev.trades)
+            this.trades = this.trades.concat(ev.trades)
 
             // update data after day t
             for(let i = ind; i < this.cash.length; i++) {
-                for (let k in this.values[i].close) { // k is the tiker
-                    this.value[i].close[k] = this.prices[i].close[k] * this.amounts[ind].close[k]
-                    this.cash[i] = this.cash[ind]
+                for (let k in this.values[i].close) { // k is the ticker
+                    this.amounts[i].close[k] = this.amounts[ind].close[k]
+                    this.values[i].close[k] = this.prices[i].close[k] * this.amounts[ind].close[k]
                 }
+                this.cash[i].close = this.cash[ind].close
             }
+        }
+    }
+
+    addLong(t, tickersLong, percentagesLong) { 
+            let ind = this.cash.findIndex((item) => item.date == t)
+            let tradeT = new Trade(this.pool, this.values[ind], this.amounts[ind], this.cash[ind], t, this.prices[ind])
+
+            tradeT.longs(tickersLong, percentagesLong)
+
+            let ev = tradeT.eval()
+            this.values[ind] = ev.values
+            this.amounts[ind] = ev.amounts
+            this.cash[ind] = ev.cash
+            this.trades = this.trades.concat(ev.trades)
+            // update data after day t
+            for(let i = ind + 1; i < this.cash.length; i++) {
+                for (let k in this.values[i].close) { // k is the ticker
+                    this.amounts[i].close[k] = this.amounts[ind].close[k]
+                    this.values[i].close[k] = this.prices[i].close[k] * this.amounts[ind].close[k]   
+                }
+                this.cash[i].close = this.cash[ind].close
+            }
+    }
+
+    addShort(t, tickersShort, percentagesShort) { 
+        let ind = this.cash.findIndex((item) => item.date == t)
+        let tradeT = new Trade(this.pool, this.values[ind], this.amounts[ind], this.cash[ind], t, this.prices[ind])
+
+        tradeT.shorts(tickersShort, percentagesShort)
+
+        let ev = tradeT.eval()
+        this.values[ind] = ev.values
+        this.amounts[ind] = ev.amounts
+        this.cash[ind] = ev.cash
+        this.trades = this.trades.concat(ev.trades)
+        // update data after day t
+        for(let i = ind + 1; i < this.cash.length; i++) {
+            for (let k in this.values[i].close) { // k is the ticker
+                this.amounts[i].close[k] = this.amounts[ind].close[k]
+                this.values[i].close[k] = this.prices[i].close[k] * this.amounts[ind].close[k]   
+            }
+            this.cash[i].close = this.cash[ind].close
         }
     }
 
@@ -182,6 +226,9 @@ class Fund {
             case 'values':
                 console.log(this.values)
                 break
+            case 'trades':
+                console.log(this.trades)
+                break
             default:
                 console.log(this.pool)
                 console.log(this.cash)
@@ -205,22 +252,8 @@ class Fund {
 // let d2 = new Date("2019-01-31T00:00:00.000Z")
 // console.log(d1>d2)
 
-// const array1 = [{a:2}, {'a':7}, {a:1}, {'a':5}, {'a':6}]
-// console.log(array1.findIndex((element) => element.a > 4))
-// let obj = {}
-// obj['d1'] = {close: {}}
-// obj['d1'].close['a1'] = 1
-// obj['d1'].close['a2'] = 2
-// console.log(obj)
 
-// let obj = {d1: "abc", close: {}}
-// obj.close['t1'] = 123
-// obj.close['t2'] = 234
-// t3='t3'
-// obj.close[t3] = 345
-// console.log(obj)
-
-// testing functionality of class above
+// testing functionality of class above, showing how to use as following:
 const aapl2019 = require('./sampleAAPL2019.json')
 const msft2019 = require('./sampleMSFT2019.json')
 const googl2019 = require('./sampleGOOGL2019.json')
@@ -231,14 +264,14 @@ let amounts = []
 let ps = []
 let cs = []
 let c0 = 100000
-let amts0 = {'aapl': 200, 'msft': 200, 'googl': 200}
+const amts0 = {'aapl': 200, 'msft': 200, 'googl': 200}
 let currentDate
 for (let i=0;i<aapl2019.length;i++) {
     currentDate = new Date(aapl2019[i].date)
     ps.push({date: currentDate, close: {'aapl': aapl2019[i].close, 'msft': msft2019[i].close, 'googl': googl2019[i].close}})
-    amounts.push({date: currentDate, close: amts0})
-    cs.push({date: currentDate, close: c0})
-    values.push({date: currentDate, close: {'aapl': aapl2019[i].close * amts0['aapl'], 'msft': msft2019[i].close * amts0['msft'], 'googl': googl2019[i].close * amts0['googl']}})
+    amounts.push({date: currentDate, close: clone(amts0)}) // need deep copy or all elements change if one change
+    cs.push({date: currentDate, close: clone(c0)}) // need deep copy or all elements change if one change
+    values.push({date: currentDate, close: {'aapl': aapl2019[i].close * clone(amts0)['aapl'], 'msft': msft2019[i].close * clone(amts0)['aapl'], 'googl': googl2019[i].close * clone(amts0)['aapl']}})
 }
 
 // sort the arrays by date
@@ -247,17 +280,24 @@ cs.sort((a, b) => a.date - b.date)
 values.sort((a, b) => a.date - b.date)
 amounts.sort((a, b) => a.date - b.date)
 
-let t0 = cs[0].date
-// console.log(values)
-let testFund = new Fund(pool, values, amounts, cs, t0, ps, [])
-// console.log(ps.findIndex((item) => item.date == t0))
-// console.log(testFund.printContent('prices'))
-// console.log(testFund.values[0].close)
 
-// for (let k in testFund.values[0].close) {
-//     console.log(k)
-//     console.log(testFund.values[0].close[k])
-// }
-// console.log(testFund.total(t0))
+let t0 = cs[0].date
+let t1 = cs[3].date
+let t2 = cs[10].date
+
+let testFund = new Fund(pool, values, amounts, cs, t0, ps, [])
+
+
 // let trade0 = new Trade(pool, testFund.values[0], testFund.amounts[0], testFund.cash[0], t0, testFund.prices[0])
-testFund.addTrade(t0, [],[], ['aapl'], [0.5])
+// testFund.addTrade(t1, ['aapl'], [0.2], 'msft', [0.1])
+// testFund.addTrade(t1, ['googl'],[0.2], [], [])
+// console.log(testFund.printContent('amounts'))
+
+// console.log('before longing')
+// console.log(cs[10])
+testFund.addLong(t1, ['msft','aapl'], [0.1,0.2])
+testFund.addShort(t2, ['msft','googl'], [0.3,0.5])
+// testFund.addTradeStrict(t1,['aapl','googl'], [0.1,0.2], ['msft'], [0.3])
+// testFund.addTradeStrict(t2,['aapl','googl'], [0.3,0.4], ['googl'], [0.5])
+console.log(testFund.printContent('trades'))
+

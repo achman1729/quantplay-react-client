@@ -32,7 +32,6 @@ export default function Header() {
             <form className="search-bar">
                 <input type="text" id="search" name="search" placeholder="Search Stock.." />
             </form>
-
         </div>
     )
 }

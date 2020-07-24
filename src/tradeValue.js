@@ -95,7 +95,8 @@ class Fund {
             cs.push({date: prices[i].date, close: csh})
             let itemAmt = {date: prices[i].date, close: {}}
             let itemV = {date: prices[i].date, close: {}}
-            for (let [s, a] in Object.entries(amts[i])) {
+            for (let s in amts[i]) {
+                let a = amts[i][s]
                 itemAmt.close[s] = a
                 itemV.close[s] = a * prices[i][s]
             }
@@ -108,9 +109,10 @@ class Fund {
 
     // trade at day t, if t is after the last of trades which have already taken place
     addTrade(t, tickersLong, percentagesLong, tickersShort, percentagesShort) {
-        if (t > this.trades[this.trades.length - 1].date) {
+        
+        if ( this.trades.length == 0 || (this.trades.length > 0 && t > this.trades[this.trades.length - 1].date)) {
             let ind = this.cash.findIndex((item) => item.date == t)
-            let tradeT = new Trade(this.pool, this.values[ind], this.amounts[ind], cash[ind], t, prices[ind])
+            let tradeT = new Trade(this.pool, this.values[ind], this.amounts[ind], this.cash[ind], t, this.prices[ind])
             tradeT.longs(tickersLong, percentagesLong)
             tradeT.short(tickersShort, percentagesShort)
             // update day t's data
@@ -122,7 +124,7 @@ class Fund {
 
             // update data after day t
             for(let i = ind; i < this.cash.length; i++) {
-                for (let [k, v] in Object.entries(this.values[i].close)) { // k is the tiker
+                for (let k in this.values[i].close) { // k is the tiker
                     this.value[i].close[k] = this.prices[i].close[k] * this.amounts[ind].close[k]
                     this.cash[i] = this.cash[ind]
                 }
@@ -136,7 +138,8 @@ class Fund {
         let totalShort = 0
 
         let ind = this.prices.findIndex((item) => item.date == t)
-        for (let [k, v] in Object.entries(this.values[ind].close)) {
+        for (let k in this.values[ind].close) {
+            v = this.values[ind].close[k]
             if (v > 0) {
                 totalLong += v
                 total += v
@@ -152,11 +155,42 @@ class Fund {
     total(t) { // evaluate total at date t, ex. return 12345
         let total = 0
         let ind = this.prices.findIndex((item) => item.date == t)
-        for (let [k, v] in Object.entries(this.values[ind].close)) { 
+        for (let k in this.values[ind].close) { 
+            let v = this.values[ind].close[k]
             total += v
         }
         total +=  this.cash[ind].close
         return total
+    }
+
+    // for testing
+    printContent(key) {
+        
+        switch (key) {
+            case 'pool':
+                console.log(this.pool)
+                break
+            case 'cash':
+                console.log(this.cash)
+                break
+            case 'prices':
+                console.log(this.prices)
+                break
+            case 'amounts':
+                console.log(this.amounts)
+                break
+            case 'values':
+                console.log(this.values)
+                break
+            default:
+                console.log(this.pool)
+                console.log(this.cash)
+                console.log(this.values)
+                console.log(this.prices)
+                console.log(this.amounts)           
+                console.log(this.trades)
+        }
+        
     }
 
 }
@@ -185,3 +219,45 @@ class Fund {
 // t3='t3'
 // obj.close[t3] = 345
 // console.log(obj)
+
+// testing functionality of class above
+const aapl2019 = require('./sampleAAPL2019.json')
+const msft2019 = require('./sampleMSFT2019.json')
+const googl2019 = require('./sampleGOOGL2019.json')
+// save only date and close price into new object
+let pool = ['aapl', 'msft', 'googl']
+let values = []
+let amounts = []
+let ps = []
+let cs = []
+let c0 = 100000
+let amts0 = {'aapl': 200, 'msft': 200, 'googl': 200}
+let currentDate
+for (let i=0;i<aapl2019.length;i++) {
+    currentDate = new Date(aapl2019[i].date)
+    ps.push({date: currentDate, close: {'aapl': aapl2019[i].close, 'msft': msft2019[i].close, 'googl': googl2019[i].close}})
+    amounts.push({date: currentDate, close: amts0})
+    cs.push({date: currentDate, close: c0})
+    values.push({date: currentDate, close: {'aapl': aapl2019[i].close * amts0['aapl'], 'msft': msft2019[i].close * amts0['msft'], 'googl': googl2019[i].close * amts0['googl']}})
+}
+
+// sort the arrays by date
+ps.sort((a, b) => a.date - b.date)
+cs.sort((a, b) => a.date - b.date)
+values.sort((a, b) => a.date - b.date)
+amounts.sort((a, b) => a.date - b.date)
+
+let t0 = cs[0].date
+// console.log(values)
+let testFund = new Fund(pool, values, amounts, cs, t0, ps, [])
+// console.log(ps.findIndex((item) => item.date == t0))
+// console.log(testFund.printContent('prices'))
+// console.log(testFund.values[0].close)
+
+// for (let k in testFund.values[0].close) {
+//     console.log(k)
+//     console.log(testFund.values[0].close[k])
+// }
+// console.log(testFund.total(t0))
+// let trade0 = new Trade(pool, testFund.values[0], testFund.amounts[0], testFund.cash[0], t0, testFund.prices[0])
+testFund.addTrade(t0, [],[], ['aapl'], [0.5])

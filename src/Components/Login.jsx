@@ -27,8 +27,10 @@ class Login extends Component {
         }
         // passing the user object in the login function to be passed to back-end
         login(user).then(res => {
-          if (res) {
+          if (!res.error) {
             this.props.history.push(`/profile`)
+          } else {
+              alert(res.error)
           }
         })
     }
@@ -39,8 +41,7 @@ class Login extends Component {
             <div className="container">
                 <div className="row">
                     <div className="col-md-6 mt-5 mx-auto">
-                        {/* form is not to be validated on submit */}
-                        <form noValidate onSubmit={this.onSubmit}>
+                        <form onSubmit={this.onSubmit}>
                             <h1 className="h3 mb-3 font-weight-normal">Please sign in</h1>
                             <div className="form-group">
                                 <input

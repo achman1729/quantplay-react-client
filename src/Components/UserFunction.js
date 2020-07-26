@@ -25,6 +25,7 @@ export const login = user => {
         password: user.password
       })
       .then(response => {
+        console.log(`response in userfunction: ${response.data}`)
         localStorage.setItem('usertoken', response.data)
         return response.data
       })

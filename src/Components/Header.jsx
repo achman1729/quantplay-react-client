@@ -34,6 +34,28 @@ class Header extends Component {
             <nav className="header">
                 <NavLink
                 exact
+                activeClassName="navbar__link--active"
+                className="navbar__link"
+                to="/watchlist"
+                >
+                Watchlist
+                </NavLink>
+                <NavLink
+                activeClassName="navbar__link--active"
+                className="navbar__link"
+                to="/portfolio"
+                >
+                Portfolio
+                </NavLink>
+                <NavLink
+                activeClassName="navbar__link--active"
+                className="navbar__link"
+                to="/post"
+                >
+                Post
+                </NavLink>
+                <NavLink
+                exact
                 className="navbar__link"
                 to="/profile"
                 >
@@ -53,28 +75,6 @@ class Header extends Component {
         return (
             <div>
                 <nav className="header">
-                    <NavLink
-                    exact
-                    activeClassName="navbar__link--active"
-                    className="navbar__link"
-                    to="/watchlist"
-                    >
-                    Watchlist
-                    </NavLink>
-                    <NavLink
-                    activeClassName="navbar__link--active"
-                    className="navbar__link"
-                    to="/portfolio"
-                    >
-                    Portfolio
-                    </NavLink>
-                    <NavLink
-                    activeClassName="navbar__link--active"
-                    className="navbar__link"
-                    to="/post"
-                    >
-                    Post
-                    </NavLink>
                     {localStorage.usertoken ? userLink : loginReglink}
                 </nav>
                 <form className="search-bar">

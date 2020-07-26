@@ -1,10 +1,10 @@
-import axios from 'axios'
+import api from './api' 
 
-// the app is connected via the "proxy": "http://localhost:8000" in package.json
+// the app is connected via the api.js
 
 export const register = newUser=> {
     // posting to users/register the payload
-    return axios
+    return api
     .post('users/register', {
       first_name: newUser.first_name,
       last_name: newUser.last_name,
@@ -19,7 +19,7 @@ export const register = newUser=> {
 export const login = user => {
     // we will be setting usertoken inside the local storage with the response.data
     // response.data will contain the token which is the encoded object of our payload
-    return axios
+    return api
       .post('users/login', {
         email: user.email,
         password: user.password
@@ -34,7 +34,7 @@ export const login = user => {
   }
 
 export const getProfile = user => {
-    return axios
+    return api
         .get('users/profile', {
         //headers: { Authorization: ` ${this.getToken()}` }
         })

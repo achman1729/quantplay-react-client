@@ -25,7 +25,7 @@ export const login = user => {
         password: user.password
       })
       .then(response => {
-        if (response.data.error != 'wrong password') {
+        if (response.data.error !== 'wrong password') {
           localStorage.setItem('usertoken', response.data)
         }
         return response.data

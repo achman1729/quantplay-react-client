@@ -1,24 +1,8 @@
 import React from 'react'
-<<<<<<< HEAD
-import {Container, Row, Col, Button} from "react-bootstrap"
-import BuildPortfolio from './BuildPortfolio'
+// import {Container, Row, Col} from "react-bootstrap"
 
 export default function Portfolio() {
     return (
-
-<Container>
-    <Row className="justify-content-center">
-    <Button variant="outline-warning" size="lg" className="p-1"> + </Button>
-    </Row>
-    <Row>
-         show some examples.
-    </Row>
-    <Row>
-        
-        <BuildPortfolio />
-    </Row>
-    
-</Container>
-
+        <div></div>
     )
 }

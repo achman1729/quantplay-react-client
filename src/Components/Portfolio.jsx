@@ -1,4 +1,5 @@
 import React from 'react'
+<<<<<<< HEAD
 import {Container, Row, Col, Button} from "react-bootstrap"
 import BuildPortfolio from './BuildPortfolio'
 
@@ -18,5 +19,6 @@ export default function Portfolio() {
     </Row>
     
 </Container>
+
     )
 }

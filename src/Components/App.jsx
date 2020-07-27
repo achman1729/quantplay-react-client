@@ -4,6 +4,9 @@ import Watchlist from "./Watchlist"
 import Portfolio from "./Portfolio"
 import Post from "./Post"
 import Header from "./Header"
+import Login from "./Login"
+import Register from "./Register"
+import Profile from "./Profile"
 
 function App() {
   return (
@@ -14,6 +17,9 @@ function App() {
         <Route exact path="/watchlist" component={Watchlist} />
         <Route exact path="/portfolio" component={Portfolio} />
         <Route exact path="/post" component={Post} />
+        <Route exact path="/login" component={Login} />
+        <Route exact path="/register" component={Register} />
+        <Route exact path="/profile" component={Profile} />
       </Switch>
     </BrowserRouter>
     </>

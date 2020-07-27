@@ -1,26 +1,22 @@
 import React from 'react'
-import {Container, Row, Col} from "react-bootstrap"
+import {Container, Row, Col, Button} from "react-bootstrap"
+import BuildPortfolio from './BuildPortfolio'
 
 export default function Portfolio() {
     return (
 
 <Container>
-    <Row>
-        <Col>Card 1</Col>
-        <Col>Card 2</Col>
+    <Row className="justify-content-center">
+    <Button variant="outline-warning" size="lg" className="p-1"> + </Button>
     </Row>
     <Row>
-        <Col>Card 3</Col>
-        <Col>Card 4</Col>
+         show some examples.
     </Row>
     <Row>
-        <Col>Card 5</Col>
-        <Col>Card 6</Col>
+        
+        <BuildPortfolio />
     </Row>
-    <Row>
-        <Col>Card 7</Col>
-        <Col>Card 8</Col>
-    </Row>
+    
 </Container>
     )
 }

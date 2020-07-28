@@ -75,4 +75,7 @@ function ApiGet(symbol, dateStr1, dateStr2) {
     // const ele = <PriceVol series={series} seriesVolume={seriesVolume} />
 }
 
+
 export default ApiGet
+
+

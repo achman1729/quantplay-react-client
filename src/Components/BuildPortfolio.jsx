@@ -68,7 +68,7 @@ class BuildPortfolio extends React.Component {
             console.log(i.da)
             return (
             <Form noValidate id={"form" + i.num}>          
-                <Form.Row>
+                <Form.Row className="justify-content-center text-center">
                     <Form.Group as={Col} md="3" controlId="validationCustom01">
                     <Form.Label>Trade Date</Form.Label>
                     <Form.Control
@@ -82,14 +82,14 @@ class BuildPortfolio extends React.Component {
                         Please provide a valid date.
                     </Form.Control.Feedback>
                     </Form.Group>
-                    <Form.Group as={Col} md="3" controlId="validationCustom02">
+                    <Form.Group as={Col} md="2" controlId="validationCustom02" className="justify-content-center">
                     <Form.Label>Long/Short</Form.Label>
                     <Form.Check type="switch" id={"switch" + i.num} label="Short" size="lg" onChange={(e) => {console.log(e.target.parentElement)}} />
                     <Form.Control.Feedback type="invalid">
                         Long by default.
                     </Form.Control.Feedback>
                     </Form.Group>
-                    <Form.Group as={Col} md="3" controlId="validationCustom03">
+                    <Form.Group as={Col} md="2" controlId="validationCustom03">
                     <Form.Label>Target</Form.Label>
                     <Form.Control as="select" size="lg" custom onChange={
                             (e) => {
@@ -193,7 +193,7 @@ class BuildPortfolio extends React.Component {
                 </Form.Row>
                 
                 <Form.Row className="justify-content-center">
-                    <Button type="submit" variant="outline-warning" size="lg" className="p-1" >Save</Button>
+                    <Button type="submit" variant="outline-warning" size="lg" className="p-2" >Save</Button>
                 </Form.Row>
                 
             </Form>

@@ -102,7 +102,7 @@ class Fund {
                 itemAmt.close[s] = a
                 itemV.close[s] = a * prices[i][s]
             }
-            as.push(itemA)
+            as.push(itemAmt)
             vs.push(itemV)
         }
         let fundInit = new Fund(p, vs, as, cs, dtBegin, prices, [])
@@ -181,19 +181,37 @@ class Fund {
         let totalLong = 0
         let totalShort = 0
 
-        let ind = this.prices.findIndex((item) => item.date == t)
-        for (let k in this.values[ind].close) {
-            v = this.values[ind].close[k]
-            if (v > 0) {
-                totalLong += v
-                total += v
-            } else {
-                totalShort += v
-                total += v + this.cash[ind].close
+        if(t != null) {
+            let ind = this.prices.findIndex((item) => item.date == t)
+            let v
+            
+            for (let k in this.values[ind].close) {
+                v = this.values[ind].close[k]
+                if (v > 0) {
+                    totalLong += +v
+                    total += +v
+                } else {
+                    totalShort += +v
+                    total += +v
+                }
             }
+            total +=  this.cash[ind].close
+            
+            return {val: total, valLong: totalLong, valShort: totalShort, cash: this.cash[ind].close}
+        } 
+        
+    }
+
+    eval() {
+        let res = []
+        let d = this.prices[0].date
+        let r
+        for (let i=0;i<this.prices.length;i++) {
+            d = this.prices[i].date
+            r = this.val(d)
+            res.push({date: d, val: r['val'], valLong: r['valLong'], valShort: r['valShort'], cash: this.cash[i].close})
         }
-        total +=  this.cash[ind].close
-        return {val: total, valLong: totalLong, valShort: totalShort, cash: this.cash[ind].close}
+        return res
     }
 
     total(t) { // evaluate total at date t, ex. return 12345
@@ -254,38 +272,38 @@ class Fund {
 
 
 // testing functionality of class above, showing how to use as following:
-const aapl2019 = require('./sampleAAPL2019.json')
-const msft2019 = require('./sampleMSFT2019.json')
-const googl2019 = require('./sampleGOOGL2019.json')
-// save only date and close price into new object
-let pool = ['aapl', 'msft', 'googl']
-let values = []
-let amounts = []
-let ps = []
-let cs = []
-let c0 = 100000
-const amts0 = {'aapl': 200, 'msft': 200, 'googl': 200}
-let currentDate
-for (let i=0;i<aapl2019.length;i++) {
-    currentDate = new Date(aapl2019[i].date)
-    ps.push({date: currentDate, close: {'aapl': aapl2019[i].close, 'msft': msft2019[i].close, 'googl': googl2019[i].close}})
-    amounts.push({date: currentDate, close: clone(amts0)}) // need deep copy or all elements change if one change
-    cs.push({date: currentDate, close: clone(c0)}) // need deep copy or all elements change if one change
-    values.push({date: currentDate, close: {'aapl': aapl2019[i].close * clone(amts0)['aapl'], 'msft': msft2019[i].close * clone(amts0)['aapl'], 'googl': googl2019[i].close * clone(amts0)['aapl']}})
-}
+// const aapl2019 = require('./sampleAAPL2019.json')
+// const msft2019 = require('./sampleMSFT2019.json')
+// const googl2019 = require('./sampleGOOGL2019.json')
+// // save only date and close price into new object
+// let pool = ['aapl', 'msft', 'googl']
+// let values = []
+// let amounts = []
+// let ps = []
+// let cs = []
+// let c0 = 100000
+// const amts0 = {'aapl': 200, 'msft': 200, 'googl': 200}
+// let currentDate
+// for (let i=0;i<aapl2019.length;i++) {
+//     currentDate = new Date(aapl2019[i].date)
+//     ps.push({date: currentDate, close: {'aapl': aapl2019[i].close, 'msft': msft2019[i].close, 'googl': googl2019[i].close}})
+//     amounts.push({date: currentDate, close: clone(amts0)}) // need deep copy or all elements change if one change
+//     cs.push({date: currentDate, close: clone(c0)}) // need deep copy or all elements change if one change
+//     values.push({date: currentDate, close: {'aapl': aapl2019[i].close * clone(amts0)['aapl'], 'msft': msft2019[i].close * clone(amts0)['aapl'], 'googl': googl2019[i].close * clone(amts0)['aapl']}})
+// }
 
 // sort the arrays by date
-ps.sort((a, b) => a.date - b.date)
-cs.sort((a, b) => a.date - b.date)
-values.sort((a, b) => a.date - b.date)
-amounts.sort((a, b) => a.date - b.date)
+// ps.sort((a, b) => a.date - b.date)
+// cs.sort((a, b) => a.date - b.date)
+// values.sort((a, b) => a.date - b.date)
+// amounts.sort((a, b) => a.date - b.date)
 
 
-let t0 = cs[0].date
-let t1 = cs[3].date
-let t2 = cs[10].date
+// let t0 = cs[0].date
+// let t1 = cs[3].date
+// let t2 = cs[10].date
 
-let testFund = new Fund(pool, values, amounts, cs, t0, ps, [])
+// let testFund = new Fund(pool, values, amounts, cs, t0, ps, [])
 
 
 // let trade0 = new Trade(pool, testFund.values[0], testFund.amounts[0], testFund.cash[0], t0, testFund.prices[0])
@@ -295,9 +313,10 @@ let testFund = new Fund(pool, values, amounts, cs, t0, ps, [])
 
 // console.log('before longing')
 // console.log(cs[10])
-testFund.addLong(t1, ['msft','aapl'], [0.1,0.2])
-testFund.addShort(t2, ['msft','googl'], [0.3,0.5])
-// testFund.addTradeStrict(t1,['aapl','googl'], [0.1,0.2], ['msft'], [0.3])
-// testFund.addTradeStrict(t2,['aapl','googl'], [0.3,0.4], ['googl'], [0.5])
-console.log(testFund.printContent('trades'))
+// testFund.addLong(t1, ['msft','aapl'], [0.1,0.2])
+// testFund.addShort(t2, ['msft','googl'], [0.3,0.5])
+// // testFund.addTradeStrict(t1,['aapl','googl'], [0.1,0.2], ['msft'], [0.3])
+// // testFund.addTradeStrict(t2,['aapl','googl'], [0.3,0.4], ['googl'], [0.5])
+// console.log(testFund.printContent('trades'))
 
+export default Fund

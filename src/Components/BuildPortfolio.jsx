@@ -2,6 +2,11 @@ import React from 'react'
 
 import {Form, Col, Button, InputGroup, Container, Row} from 'react-bootstrap'
 
+import { getP, replaceP } from './PortfolioConnections'
+
+
+
+
 const clone = require('rfdc')()
 
 const testTrades = [
@@ -33,18 +38,41 @@ class BuildPortfolio extends React.Component {
             validated: false,
             setValidated: false,
             lines: testTrades,
-            switch: 'long',
-            temp: null
+            // temp: null,
+            name: 'myPortfolio',
+            begin: '20161231',
+            cash: 100000,
+            benchmark: 0
         }
     }
 
     handleSubmit = (event) => {
-        const form = event.currentTarget
-        if (form.checkValidity() === false) {
-        event.preventDefault()
-        event.stopPropagation()
-        }
+        // const form = event.currentTarget
+        // if (form.checkValidity() === false) {
+        // event.preventDefault()
+        // event.stopPropagation()
+        // }
         // access to form data
+
+        event.preventDefault()
+
+        const newP = {
+            // first_name: p.first_name,
+            // last_name: p.last_name,
+            // email: p.email,
+            first_name: 'a',
+            last_name: 'b',
+            email: 'ab@email.com',
+            name: this.name,
+            begin: this.begin,
+            cash: this.cash,
+            benchmark: this.benchmark
+        }
+
+        replaceP(newP).then(res => {
+            // this.props.history.push(`/login`)
+            console.log('replaceP executed')
+        })
 
         
     }
@@ -77,6 +105,7 @@ class BuildPortfolio extends React.Component {
                         placeholder="YYYYMMDD"
                         defaultValue="20181231"
                         size="lg"
+                        
                     />
                     <Form.Control.Feedback type="invalid">
                         Please provide a valid date.
@@ -93,12 +122,12 @@ class BuildPortfolio extends React.Component {
                     <Form.Label>Target</Form.Label>
                     <Form.Control as="select" size="lg" custom onChange={
                             (e) => {
-                                    i.da.setState({temp: e.target.value})
+                                    i.da.setState({temp: e.target.value}) // async way, not guarranteed to be instant execution
                                     let items = [...i.da.state.lines] // shallow copy of array
                                     let item = {...items[i.num]} // shallow copy of item
                                     item.target = e.target.value
                                     items[i.num] = item // mutating
-                                    i.da.setState((states, props) => ({lines: items}))
+                                    i.da.setState((states, props) => ({lines: items})) // faster update with setState((states, props) => ({}))
                                     console.log('muted?')
                                     
                                     
@@ -145,6 +174,7 @@ class BuildPortfolio extends React.Component {
                         placeholder="YYYYMMDD"
                         defaultValue="20181231"
                         size="lg"
+                        onChange={(e) => {this.setState((states, props) => ({begin: e.target.value}))}}
                     />
                     <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                     </Form.Group>
@@ -156,6 +186,7 @@ class BuildPortfolio extends React.Component {
                         placeholder="Cash"
                         defaultValue="100000"
                         size="lg"
+                        onChange={(e) => {this.setState((states, props) => ({cash: Number(e.target.value)}))}}
                     />
                     <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                     </Form.Group>
@@ -166,6 +197,7 @@ class BuildPortfolio extends React.Component {
                         placeholder="Portfolio Name"
                         size="lg"
                         required
+                        onChange={(e) => {this.setState((states, props) => ({name: e.target.value}))}}
                         />
                         <Form.Control.Feedback type="invalid">
                         Descriptional of stradegy
@@ -180,6 +212,7 @@ class BuildPortfolio extends React.Component {
                         size="lg"
                         aria-describedby="inputGroupPrepend"
                         required
+                        onChange={(e) => {this.setState((states, props) => ({benchmark: Number(e.target.value)/100}))}}
                         />
                         <InputGroup.Prepend>
                         <InputGroup.Text id="inputGroupPrepend">%</InputGroup.Text>

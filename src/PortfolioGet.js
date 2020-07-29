@@ -10,12 +10,25 @@ function PortfolioData(portfolioName) {
     const cash = 100000
     const benchmark = 0 // annual return of benchmark
 
-    const trades = [{   // ex. buy apple stock from 50% of cash at 2019-01-31
+    const trades = [{   // ex. buy apple stock from 50% of cash at 2019-01-25
                         date: new Date("2019-01-25"),
                         direction: "long",
                         target: "aapl",
                         percentage: 0.5
-                    }]
+                    },
+                    {   // ex. buy msft stock from 50% of cash at 2019-01-31
+                        date: new Date("2019-01-31"),
+                        direction: "long",
+                        target: "msft",
+                        percentage: 0.5
+                    },
+                    {   // ex. buy googl stock from 100% of cash at 2019-01-31
+                        date: new Date("2019-01-25"),
+                        direction: "long",
+                        target: "googl",
+                        percentage: 1
+                    }
+                ]
 
 
     // call api to fetch price info of stocks in pool
@@ -109,8 +122,8 @@ function PortfolioData(portfolioName) {
     const series = new TimeSeries({ name, columns, collection: sortedCollection })
 
     // console.log(series.avg("close"))
-
-    return {'series': series, name: name, trades: [], description: "whatever", creator: "whoever", stats: stats}
+    console.log(trades)
+    return {'series': series, name: name, trades: trades, description: "whatever", creator: "whoever", stats: stats}
 
 }
 

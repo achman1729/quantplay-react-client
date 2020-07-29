@@ -9,7 +9,7 @@ export default function CardStock(props) {
         <Container fluid className="text-center bg-light p-1 border border-warning rounded-lg">
             <Row className="p-2">
                 <Col xs={3} id="symbol" className="h1 ">{props.ticker}</Col>
-                <Col xs={6} id="rtprice" className="h2 text-success">{props.series.atLast().get("close")}</Col>
+                <Col xs={6} id="rtprice" className="h2 text-success">{Math.round((props.series.atLast().get("close") + Number.EPSILON) * 100) / 100}</Col>
                 <Col xs={2} className="justify-content-end"><Button variant="outline-warning" size="xs" className="p-1">remove</Button></Col>
             </Row>
             <Row>

@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { NavLink, withRouter } from "react-router-dom"
 import "../Stylesheets/Header.scss"
-import SearchBar from './Search'
 
 class Header extends Component {
 
@@ -49,13 +48,6 @@ class Header extends Component {
                 Portfolio
                 </NavLink>
                 <NavLink
-                activeClassName="navbar__link--active"
-                className="navbar__link"
-                to="/post"
-                >
-                Post
-                </NavLink>
-                <NavLink
                 exact
                 className="navbar__link"
                 to="/profile"
@@ -78,7 +70,6 @@ class Header extends Component {
                 <nav className="header">
                     {localStorage.usertoken ? userLink : loginReglink}
                 </nav>
-                <SearchBar />
             </div>
         )
     }

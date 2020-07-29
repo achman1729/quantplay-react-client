@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { NavLink, withRouter } from "react-router-dom"
 import "../Stylesheets/Header.scss"
+import SearchBar from './Search'
 
 class Header extends Component {
 
@@ -77,10 +78,7 @@ class Header extends Component {
                 <nav className="header">
                     {localStorage.usertoken ? userLink : loginReglink}
                 </nav>
-                <form className="search-bar">
-                    <input type="text" id="search" name="search" placeholder="Search Stock.." />
-                </form>
-
+                <SearchBar />
             </div>
         )
     }

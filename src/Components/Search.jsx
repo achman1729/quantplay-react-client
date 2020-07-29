@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Axios from 'axios'
 import "../Stylesheets/Search.scss"
+import SearchCard from './SearchCard'
 
 export default function Search() {
     const token = "token=cb0fa4bee45c5b25e4b7cdc1c74b3e54dd75720e"
@@ -8,6 +9,7 @@ export default function Search() {
     const [symbol, setSymbol] = useState()
     const [price, setPrice] = useState()
     const [name, setName] = useState()
+    const [visible, setVisible] = useState(false)
 
     // setting date to the latest date a price that can be retrieved
     var today = new Date()
@@ -41,19 +43,18 @@ export default function Search() {
                 console.log(error)
             })
     }
+ 
 
     return (
         <div className="search-container">
             <div className="form-group">
                 <form className="search-bar" onSubmit={onSubmit}>
                     <input className="form-control" type="text" id="search" name="search" placeholder="Search Stock.." onChange={onChange} />
-                    <button className="btn btn-dark">Search</button>
+                    <button className="btn btn-dark" onClick={() => {
+                        setVisible(true)
+                    }}>Search</button>
                 </form>
-                <div className="search-card">
-                    <h1>Name: <span>{name}</span></h1><h3>Price: <span>{price}</span></h3>
-                </div>
-                <button className="btn btn-primary">Add to watchlist</button>
-                <button className="btn btn-success">Add to portfolio</button>
+                    {visible ? <SearchCard name={name} price={price} /> : null}
             </div>
         </div>
     )

@@ -50,6 +50,13 @@ class Header extends Component {
                 <NavLink
                 exact
                 className="navbar__link"
+                to="/search"
+                >
+                Search
+                </NavLink>
+                <NavLink
+                exact
+                className="navbar__link"
                 to="/profile"
                 >
                 Profile

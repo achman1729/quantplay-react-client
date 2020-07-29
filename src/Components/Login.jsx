@@ -32,7 +32,7 @@ class Login extends Component {
                     alert(res.error)
 
                 } else {
-                    this.props.history.push(`/profile`)
+                    this.props.history.push(`/search`)
                 }
         })            
             .catch(error => {

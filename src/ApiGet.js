@@ -12,26 +12,6 @@ function ApiGet(symbol, dateStr1, dateStr2) {
     let temp = null
     let tempMeta = null
 
-
-    // uncomment this part to call real api, or use sampleJSON.json to test and save extra api calls
-    // let apiRes = fetch(tiingoString)
-    //     .then(data => {return data.json()})
-    //     .then(res => {
-    //                     // console.log(res)
-    //                     temp = res       
-    //         })
-    //     .catch(er => {console.log(er)})
-
-    // meta info such as description could be acquired
-    // let apiMeta = fetch(tiingoMeta)
-    //     .then(data => {return data.json()})
-    //     .then(res => {
-    //                     // console.log(res)
-    //                     tempMeta = res       
-    //         })
-    //     .catch(err => {console.log(err)})
-
-
     // building timeseries
     const stockSeries = require("./sampleJSON.json") // sample in tiingo format for test
     // const stockSeries = temp // fetch from tiingo api
@@ -74,7 +54,6 @@ function ApiGet(symbol, dateStr1, dateStr2) {
     // to call the chart component, use the following code in other components
     // const ele = <PriceVol series={series} seriesVolume={seriesVolume} />
 }
-
 
 export default ApiGet
 

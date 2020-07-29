@@ -5,6 +5,7 @@ import api from './api'
 
 export const replaceP = p => {
     // posting to create/replace portfolio
+    console.log(p)
     return api
     .post('build', {
       first_name: p.first_name,
@@ -13,7 +14,8 @@ export const replaceP = p => {
       name: p.name,
       begin: p.begin,
       cash: p.cash,
-      benchmark: p.benchmark
+      benchmark: p.benchmark,
+      trades: p.trades
     })
     .then(response => {
       console.log('portfolio created/replaced ' + response)

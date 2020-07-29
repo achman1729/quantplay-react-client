@@ -18,6 +18,8 @@ export default function Search() {
     var yyyy = today.getFullYear()
     today = mm + '-' + dd + '-' + yyyy
     const date = today
+    var lastYear = yyyy - 1
+    var oneYear = mm + '-' + dd + '-' + lastYear
 
     const onChange = (e) => {
         setSymbol(e.target.value)
@@ -54,7 +56,7 @@ export default function Search() {
                         setVisible(true)
                     }}>Search</button>
                 </form>
-                    {visible ? <SearchCard name={name} price={price} /> : null}
+                    {visible ? <SearchCard name={name} price={price} today={today} oneYear={oneYear} symbol={symbol}/> : null}
             </div>
         </div>
     )

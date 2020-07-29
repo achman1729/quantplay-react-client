@@ -9,7 +9,9 @@ export default function CardStock(props) {
             <Row className="p-2">
                 <Col xs={3} id="symbol" className="h1 ">{props.ticker}</Col>
                 <Col xs={7} id="rtprice" className="h1 display-4 text-success">{props.series.atLast().get("close")}</Col>
-                <Col xs={1} className="justify-content-end"><Button variant="outline-warning" size="xs" className="p-1">remove</Button></Col>
+                <Col xs={1} className="justify-content-end">
+                    <Button variant="outline-warning" size="xs" className="p-1">remove</Button>
+                </Col>
             </Row>
             <Row>
                 <Col xs={3} className="justify-content-center h3">{props.companyName}</Col>
@@ -27,6 +29,5 @@ export default function CardStock(props) {
                 <Col id="chart" xs={9}><PriceVol series={props.series} seriesVolume={props.seriesVolume} /></Col>
             </Row>
         </Container>
-
     )
 }

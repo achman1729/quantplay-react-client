@@ -17,7 +17,7 @@ export default function CardPortfolio() {
             <Container fluid className="text-center bg-light p-1 border border-warning rounded-lg">
                 <Row className="p-2">
                     <Col xs={3} id="symbol" className="h4">{name}</Col>
-                    <Col xs={6} id="valueLatest" className="h3 text-success ">{series.atLast().get("close")}</Col>
+                    <Col xs={6} id="valueLatest" className="h3 text-success ">{Math.round((series.atLast().get("close") + Number.EPSILON) * 100) / 100}</Col>
                     <Col xs={3} id="avatar" >{creator}</Col>
                 </Row>
                 <Row>
@@ -40,8 +40,14 @@ export default function CardPortfolio() {
                 </Row>
                 <Row>
                     <Col xs={3} className="font-italic small text-wrap scroll">
-                        <p>{description}</p>
-                        {trades}
+                        <ul>{
+                            trades.map(trade => (<li key={trade.date}>{trade.date + ", "
+                                                    + trade.direction + ", "
+                                                    + trade.target + ", "
+                                                    + trade.percentage * 100 + "%"
+                                                }</li>))
+                        }
+                        </ul>  
                     </Col>
                     <Col id="chart" xs={9}><PortfolioChart series={series} /></Col>
                 </Row>

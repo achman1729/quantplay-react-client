@@ -6,7 +6,7 @@ import api from './api'
 export const replaceP = p => {
     // posting to create/replace portfolio
     return api
-    .post('portfolio', {
+    .post('build', {
       first_name: p.first_name,
       last_name: p.last_name,
       email: p.email,
@@ -16,7 +16,7 @@ export const replaceP = p => {
       benchmark: p.benchmark
     })
     .then(response => {
-      console.log('portfolio created/replaced')
+      console.log('portfolio created/replaced ' + response)
     })
 }
 
@@ -24,7 +24,7 @@ export const replaceP = p => {
 
 export const getP = ps => {
     return api
-        .get('portfolio', {
+        .get('ps', {
         //headers: { Authorization: ` ${this.getToken()}` }
         })
         .then(response => {

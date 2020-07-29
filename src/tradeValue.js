@@ -93,7 +93,7 @@ class Fund {
         let as = [] // to the amounts in Fund constructor
         let cs = [] // to the cash in Fund constructor
 
-        for(let i = prices.findIndex((ele) => ele.date == dtBegin); i < prices.length; i++) {
+        for(let i = prices.findIndex((ele) => ele.date.getTime() == dtBegin.getTime()); i < prices.length; i++) {
             cs.push({date: prices[i].date, close: csh})
             let itemAmt = {date: prices[i].date, close: {}}
             let itemV = {date: prices[i].date, close: {}}
@@ -112,7 +112,7 @@ class Fund {
     // trade at day t, if t is after the last of trades which have already taken place
     addTradeStrict(t, tickersLong, percentagesLong, tickersShort, percentagesShort) {
         if ( this.trades.length == 0 || (this.trades.length > 0 && t > this.trades[this.trades.length - 1].date)) {
-            let ind = this.cash.findIndex((item) => item.date == t)
+            let ind = this.cash.findIndex((item) => item.date.getTime() == t.getTime())
             let tradeT = new Trade(this.pool, this.values[ind], this.amounts[ind], this.cash[ind], t, this.prices[ind])
             tradeT.longs(tickersLong, percentagesLong)
             tradeT.short(tickersShort, percentagesShort)
@@ -135,7 +135,8 @@ class Fund {
     }
 
     addLong(t, tickersLong, percentagesLong) { 
-            let ind = this.cash.findIndex((item) => item.date == t)
+            let ind = this.cash.findIndex((item) => item.date.getTime() == t.getTime())
+            
             let tradeT = new Trade(this.pool, this.values[ind], this.amounts[ind], this.cash[ind], t, this.prices[ind])
 
             tradeT.longs(tickersLong, percentagesLong)
@@ -156,7 +157,7 @@ class Fund {
     }
 
     addShort(t, tickersShort, percentagesShort) { 
-        let ind = this.cash.findIndex((item) => item.date == t)
+        let ind = this.cash.findIndex((item) => item.date.getTime() == t.getTime())
         let tradeT = new Trade(this.pool, this.values[ind], this.amounts[ind], this.cash[ind], t, this.prices[ind])
 
         tradeT.shorts(tickersShort, percentagesShort)
@@ -182,7 +183,7 @@ class Fund {
         let totalShort = 0
 
         if(t != null) {
-            let ind = this.prices.findIndex((item) => item.date == t)
+            let ind = this.prices.findIndex((item) => item.date.getTime() == t.getTime())
             let v
             
             for (let k in this.values[ind].close) {
@@ -216,7 +217,7 @@ class Fund {
 
     total(t) { // evaluate total at date t, ex. return 12345
         let total = 0
-        let ind = this.prices.findIndex((item) => item.date == t)
+        let ind = this.prices.findIndex((item) => item.date.getTime() == t.getTime())
         for (let k in this.values[ind].close) { 
             let v = this.values[ind].close[k]
             total += v

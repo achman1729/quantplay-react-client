@@ -8,7 +8,7 @@ export default function Portfolio() {
     return (
         // <BuildPortfolio />
 
-        <CardPortfolio />
+        <BuildPortfolio />
         
     )
 }

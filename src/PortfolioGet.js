@@ -77,7 +77,7 @@ function PortfolioData(portfolioName) {
     })
     
     // create a Fund object
-    let fund = new Fund(pool, values, amounts, cs, dateBegin, prices, [])
+    let fund = new Fund(pool, values, amounts, cs, dateBegin, prices, [], benchmark)
     // console.log('testing Fund obj')
     // console.log(fund.eval())
 
@@ -91,6 +91,8 @@ function PortfolioData(portfolioName) {
     }
 
     let ev = fund.eval()
+    let stats = fund.stats()
+    console.log(stats)
 
     // create a series of values (type TimeSeries) which would be used by PortfolioChart
     const name = 'myfund1'
@@ -108,7 +110,7 @@ function PortfolioData(portfolioName) {
 
     // console.log(series.avg("close"))
 
-    return {'series': series, name: name, trades: [], description: "whatever", creator: "whoever"}
+    return {'series': series, name: name, trades: [], description: "whatever", creator: "whoever", stats: stats}
 
 }
 

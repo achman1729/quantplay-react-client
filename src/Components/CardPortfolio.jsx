@@ -15,24 +15,24 @@ export default function CardPortfolio() {
 
             <Container fluid className="text-center bg-light p-1 border border-warning rounded-lg">
                 <Row className="p-2">
-                    <Col xs={3} id="symbol" className="h1 ">{name}</Col>
-                    <Col xs={6} id="valueLatest" className="h1 display-4 text-success">{series.atLast().get("close")}</Col>
+                    <Col xs={3} id="symbol" className="h4">{name}</Col>
+                    <Col xs={6} id="valueLatest" className="h3 text-success ">{series.atLast().get("close")}</Col>
                     <Col xs={3} id="avatar" >{creator}</Col>
                 </Row>
                 <Row>
-                    <Col xs={6} className="justify-content-center h3">
-                        <Row >
+                    <Col xs={6} >
+                        <Row className="justify-content-center h6">
                             <Col id="premium"> 2.00% </Col><Col id="volatility"> 1.30% </Col><Col id="drawback"> 3.50% </Col>
                         </Row>
-                        <Row>
+                        <Row className="justify-content-center small">
                             <Col> Premium </Col><Col> Volatility </Col><Col> Max-drawback </Col>
                         </Row>
                     </Col>
-                    <Col xs={6}>
-                        <Row className="h1">
+                    <Col xs={6} >
+                        <Row className="justify-content-center h6">
                             <Col id="rtday"> 1.00% </Col><Col id="rtmonth"> 2.00% </Col><Col id="rtyear"> 3.00% </Col>
                         </Row>
-                        <Row>
+                        <Row className="justify-content-center ">
                             <Col> day </Col><Col> month </Col><Col> year </Col>
                         </Row>
                     </Col>

@@ -10,6 +10,13 @@ function PortfolioData(portfolioName) {
     const cash = 100000
     const benchmark = 0 // annual return of benchmark
 
+    const trades = [{   // ex. buy apple stock from 50% of cash at 2019-01-31
+                        date: new Date("2019-01-25"),
+                        direction: "long",
+                        target: "aapl",
+                        percentage: 0.5
+                    }]
+
 
     // call api to fetch price info of stocks in pool
     const stockSeries1 = require("./sampleAAPL2019.json")
@@ -73,6 +80,16 @@ function PortfolioData(portfolioName) {
     let fund = new Fund(pool, values, amounts, cs, dateBegin, prices, [])
     // console.log('testing Fund obj')
     // console.log(fund.eval())
+
+    // go through array of trade
+    for (let i = 0; i < trades.length; i++) {
+        if(trades[i].direction = "long") {
+            fund.addLong(trades[i].date, [trades[i].target], [trades[i].percentage])
+        } else {
+            fund.addShort(trades[i].date, [trades[i].target], [trades[i].percentage])
+        }  
+    }
+
     let ev = fund.eval()
 
     // create a series of values (type TimeSeries) which would be used by PortfolioChart

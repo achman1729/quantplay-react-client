@@ -93,10 +93,10 @@ class BuildPortfolio extends React.Component {
                 console.log('trade..')
                 console.log(this.state.lines[i])
                 if(this.checkTradeValid(trade.date, trade.direction, trade.target, trade.percentage)) {
-                    console.log("entered 1st layer")
+                    // console.log("entered 1st layer")
                     if (newP.trades.length > 0) { // dates of trades should be non-descending
                         if (Date.parse(trade.date) >= Date.parse(newP.trades[newP.trades.length - 1].date)) {
-                            console.log("entered last")
+                            // console.log("entered last")
                             newP.trades.push(this.state.lines[i])
                         }
                     } else {
@@ -177,22 +177,23 @@ class BuildPortfolio extends React.Component {
                     </Form.Group>
                     <Form.Group as={Col} md="2" controlId="validationCustom03">
                     <Form.Label>Target</Form.Label>
-                    <Form.Control as="select" size="lg" custom onChange={
+                    <Form.Control
+                        required
+                        type="text"
+                        placeholder="ticker"
+                        defaultValue="msft"
+                        size="lg"
+                        onChange={
                             (e) => {
-                                    // i.da.setState({temp: e.target.value}) // async way, not guarranteed to be instant execution
                                     let items = [...i.da.state.lines] // shallow copy of array
                                     let item = {...items[i.num]} // shallow copy of item
-                                    item.target = e.target.value // targeted stock symbol
+                                    item.target = e.target.value // symbol/ticker of stock 
                                     items[i.num] = item // mutating
                                     i.da.setState((states, props) => ({lines: items})) // faster update with setState((states, props) => ({}))
-                                    console.log('update target?' + e.target.value)
+                                    console.log('update symbol?' + e.target.value)
                                     }
-                            } 
-                        >
-                        <option>aapl</option>
-                        <option>msft</option>
-                        <option>googl</option>
-                    </Form.Control>
+                            }
+                    />
                     <Form.Control.Feedback type="invalid">
                         Choose one in watchlist.
                     </Form.Control.Feedback>

@@ -22,9 +22,23 @@ export const replaceP = p => {
     })
 }
 
+// get a single existing portfolio to edit
+export const getP = p => {
+  return api
+      .get('p', {
+      //headers: { Authorization: ` ${this.getToken()}` }
+      })
+      .then(response => {
+      console.log(response)
+      return response
+      })
+      .catch(err => {
+      console.log(err)
+      })
+}
 
-
-export const getP = ps => {
+// get existing portfolios to show
+export const getPs = ps => {
     return api
         .get('ps', {
         //headers: { Authorization: ` ${this.getToken()}` }

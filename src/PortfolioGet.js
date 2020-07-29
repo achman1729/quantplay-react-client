@@ -10,6 +10,26 @@ function PortfolioData(portfolioName) {
     const cash = 100000
     const benchmark = 0 // annual return of benchmark
 
+    const trades = [{   // ex. buy apple stock from 50% of cash at 2019-01-25
+                        date: new Date("2019-01-25"),
+                        direction: "long",
+                        target: "aapl",
+                        percentage: 0.5
+                    },
+                    {   // ex. buy msft stock from 50% of cash at 2019-01-31
+                        date: new Date("2019-01-31"),
+                        direction: "long",
+                        target: "msft",
+                        percentage: 0.5
+                    },
+                    {   // ex. buy googl stock from 100% of cash at 2019-01-31
+                        date: new Date("2019-01-25"),
+                        direction: "long",
+                        target: "googl",
+                        percentage: 1
+                    }
+                ]
+
 
     // call api to fetch price info of stocks in pool
     const stockSeries1 = require("./sampleAAPL2019.json")
@@ -70,10 +90,22 @@ function PortfolioData(portfolioName) {
     })
     
     // create a Fund object
-    let fund = new Fund(pool, values, amounts, cs, dateBegin, prices, [])
+    let fund = new Fund(pool, values, amounts, cs, dateBegin, prices, [], benchmark)
     // console.log('testing Fund obj')
     // console.log(fund.eval())
+
+    // go through array of trade
+    for (let i = 0; i < trades.length; i++) {
+        if(trades[i].direction = "long") {
+            fund.addLong(trades[i].date, [trades[i].target], [trades[i].percentage])
+        } else {
+            fund.addShort(trades[i].date, [trades[i].target], [trades[i].percentage])
+        }  
+    }
+
     let ev = fund.eval()
+    let stats = fund.stats()
+    console.log(stats)
 
     // create a series of values (type TimeSeries) which would be used by PortfolioChart
     const name = 'myfund1'
@@ -90,8 +122,8 @@ function PortfolioData(portfolioName) {
     const series = new TimeSeries({ name, columns, collection: sortedCollection })
 
     // console.log(series.avg("close"))
-
-    return {'series': series, name: name, trades: [], description: "whatever", creator: "whoever"}
+    console.log(trades)
+    return {'series': series, name: name, trades: trades, description: "whatever", creator: "whoever", stats: stats}
 
 }
 

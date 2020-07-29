@@ -7,8 +7,9 @@ import CardPortfolio from './CardPortfolio'
 export default function Portfolio() {
     return (
         // <BuildPortfolio />
-
+        <>
+        <CardPortfolio />
         <BuildPortfolio />
-        
+        </>
     )
 }

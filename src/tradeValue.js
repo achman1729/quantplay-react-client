@@ -74,7 +74,7 @@ class Trade {
 // prices, values, amounts, cash are arrays of objects, in ascending order of date, with the same arrays of date property
 // trades is sorted array of objects, in the form as of Trade.eval().trades
 class Fund {
-    constructor(pool, values, amounts, cash, dateBegin, prices, trades) {
+    constructor(pool, values, amounts, cash, dateBegin, prices, trades, benchmark) {
         this.pool = pool // ex. ['aapl','msft','googl']
         this.values = values // ex. [{date: new Date("2018-12-31T00:00:00.000Z"), close: {"aapl": 12345.67, "msft": 22345.67, "googl": 32345.67}}, ...]
         this.amounts = amounts // ex. [{date: new Date("2018-12-31T00:00:00.000Z"), close: {"aapl": 12345, "msft": 22345, "googl": 32345}}, ...]
@@ -82,6 +82,7 @@ class Fund {
         this.dateBegin = dateBegin // ex. new Date("2018-12-31")
         this.prices = prices // ex. [{date: new Date("2018-12-31T00:00:00.000Z"), close: {"aapl": 123, "msft": 223, "googl": 323}}, ...]
         this.trades = trades // ex. [{ticker: "aapl", amount: 100, type: 'short', date: new Date("2019-1-4")}, ...]
+        this.benchmark = benchmark // in annual return
     }
 
     // for initialize a fund with specified amounts in a concise way
@@ -93,7 +94,7 @@ class Fund {
         let as = [] // to the amounts in Fund constructor
         let cs = [] // to the cash in Fund constructor
 
-        for(let i = prices.findIndex((ele) => ele.date == dtBegin); i < prices.length; i++) {
+        for(let i = prices.findIndex((ele) => ele.date.getTime() == dtBegin.getTime()); i < prices.length; i++) {
             cs.push({date: prices[i].date, close: csh})
             let itemAmt = {date: prices[i].date, close: {}}
             let itemV = {date: prices[i].date, close: {}}
@@ -112,7 +113,7 @@ class Fund {
     // trade at day t, if t is after the last of trades which have already taken place
     addTradeStrict(t, tickersLong, percentagesLong, tickersShort, percentagesShort) {
         if ( this.trades.length == 0 || (this.trades.length > 0 && t > this.trades[this.trades.length - 1].date)) {
-            let ind = this.cash.findIndex((item) => item.date == t)
+            let ind = this.cash.findIndex((item) => item.date.getTime() == t.getTime())
             let tradeT = new Trade(this.pool, this.values[ind], this.amounts[ind], this.cash[ind], t, this.prices[ind])
             tradeT.longs(tickersLong, percentagesLong)
             tradeT.short(tickersShort, percentagesShort)
@@ -135,7 +136,8 @@ class Fund {
     }
 
     addLong(t, tickersLong, percentagesLong) { 
-            let ind = this.cash.findIndex((item) => item.date == t)
+            let ind = this.cash.findIndex((item) => item.date.getTime() == t.getTime())
+            
             let tradeT = new Trade(this.pool, this.values[ind], this.amounts[ind], this.cash[ind], t, this.prices[ind])
 
             tradeT.longs(tickersLong, percentagesLong)
@@ -156,7 +158,7 @@ class Fund {
     }
 
     addShort(t, tickersShort, percentagesShort) { 
-        let ind = this.cash.findIndex((item) => item.date == t)
+        let ind = this.cash.findIndex((item) => item.date.getTime() == t.getTime())
         let tradeT = new Trade(this.pool, this.values[ind], this.amounts[ind], this.cash[ind], t, this.prices[ind])
 
         tradeT.shorts(tickersShort, percentagesShort)
@@ -182,7 +184,7 @@ class Fund {
         let totalShort = 0
 
         if(t != null) {
-            let ind = this.prices.findIndex((item) => item.date == t)
+            let ind = this.prices.findIndex((item) => item.date.getTime() == t.getTime())
             let v
             
             for (let k in this.values[ind].close) {
@@ -202,6 +204,7 @@ class Fund {
         
     }
 
+    // get series of total values
     eval() {
         let res = []
         let d = this.prices[0].date
@@ -216,13 +219,70 @@ class Fund {
 
     total(t) { // evaluate total at date t, ex. return 12345
         let total = 0
-        let ind = this.prices.findIndex((item) => item.date == t)
+        let ind = this.prices.findIndex((item) => item.date.getTime() == t.getTime())
         for (let k in this.values[ind].close) { 
             let v = this.values[ind].close[k]
             total += v
         }
         total +=  this.cash[ind].close
         return total
+    }
+
+    // compute simple statistics of fund
+    stats() {
+        let v = this.eval()
+        // get first and last date, value
+        let t0 = v[0].date
+        let v0 = v[0].val
+        let tL = v[v.length - 1].date
+        let vL = v[v.length - 1].val
+
+        // extra return beyond benchmark
+        let dayz = Math.floor((tL - t0) / (1000 * 3600 * 24))
+        let benchmarkReturn = this.benchmark / 365 * dayz
+        let fundReturn = (vL - v0) / v0
+        let premium = fundReturn - benchmarkReturn 
+        
+        // volatility is the (annual)standard deviation of daily return
+        let arrayV = [] // array of accumulated unit value
+        let arrayD = [] // array of daily return
+        for (let i = 0; i < v.length; i++) {
+            arrayV.push(v[i].val / v0)
+            if (i == 0) { 
+                arrayD.push(0)
+            } else {
+                arrayD.push(v[i].val / v[i - 1].val - 1)
+            }
+        }
+        
+        let sum = 0
+        arrayD.map((item) => {sum += item})
+        let avgD = sum / arrayV.length // average of daily return
+        let std = 0
+        arrayD.map((item) => {std += (item - avgD ) * (item - avgD)})
+        std = Math.sqrt(std / (arrayD.length - 1)) // standard deviation
+        let volatility = Math.sqrt(252) * std // usually 252 trading days per year
+        
+        // max-drawback is falling rate from highest value
+        let low // lowest value after current 
+        let after = []
+        let indexLow
+        let draw // drawback from current to lowest
+        let drawback = 0 // max-drawback to be saved
+        for (let i=0;i<arrayV.length;i++) {
+            after = arrayV.slice(i, arrayV.length)
+            low = Math.min(...after)
+            indexLow = arrayV.findIndex((item) => item <= low)
+            draw = (arrayV[i] - arrayV[indexLow])/arrayV[i]
+            if (draw > drawback) {drawback = draw}
+        }
+
+        // rolling day return, 22-day return, full return
+        let fullReturn = (vL - v0) / v0
+        let dayReturn =  (arrayV[arrayV.length - 1] - arrayV[arrayV.length - 2]) / arrayV[arrayV.length - 2]
+        let monthReturn = (arrayV[arrayV.length - 1] - arrayV[arrayV.length - 23]) / arrayV[arrayV.length - 23]
+
+        return {premium: premium, volatility: volatility, drawback: drawback, fullReturn: fullReturn, dayReturn: dayReturn, monthReturn: monthReturn}
     }
 
     // for testing

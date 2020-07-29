@@ -11,24 +11,24 @@ const clone = require('rfdc')()
 
 const testTrades = [
         {
-            date: new Date("20190131"),
+            date: new Date("2019-01-31"),
             direction: 'long',
             target: 'aapl',
             percentage: 0.2
 
-        },
-        {
-            date: new Date("20190231"),
-            direction: 'long',
-            target: 'msft',
-            percentage: 0.2
-        },
-        {
-            date: new Date("20190231"),
-            direction: 'long',
-            target: 'googl',
-            percentage: 0.2
         }
+        // {
+        //     date: new Date("2019-02-31"),
+        //     direction: 'long',
+        //     target: 'msft',
+        //     percentage: 0.2
+        // },
+        // {
+        //     date: new Date("2019-02-31"),
+        //     direction: 'long',
+        //     target: 'googl',
+        //     percentage: 0.2
+        // }
     ]
 
 class BuildPortfolio extends React.Component {
@@ -38,17 +38,17 @@ class BuildPortfolio extends React.Component {
             validated: false,
             lines: testTrades, // the trades data
             name: 'myPortfolio',
-            begin: '2016-12-31', // should work with Date.parse()
+            begin: '2018-12-31', // should work with Date.parse()
             cash: 100000,
             benchmark: 0
         }
     }
 
     checkInitValid() {
-        let validDate = !isNaN(Date.parse(this.begin))
-        let validName = (this.name != '')
-        let validCash = (this.cash > 0)
-        let validBenchmark = (this.benchmark >= 0)
+        let validDate = !isNaN(Date.parse(this.state.begin))
+        let validName = (this.state.name != '')
+        let validCash = (this.state.cash > 0)
+        let validBenchmark = (this.state.benchmark >= 0)
         if (validDate && validName && validCash && validBenchmark) {
             this.validated = true
             return true
@@ -56,7 +56,7 @@ class BuildPortfolio extends React.Component {
     }
 
     checkTradeValid(date, direction, target, percentage) {
-        let validDate = !isNaN(Date.parse(date)) && (Date.parse(date) >= Date.parse(this.begin))
+        let validDate = !isNaN(Date.parse(date)) && (Date.parse(date) >= Date.parse(this.state.begin))
         let validDirection = (direction == 'long' || direction == 'short')
         let validTarget = true // to be worked on checking if it is a valid symbol 
         let validPercentage = (percentage >= 0 && percentage <= 1)
@@ -80,20 +80,27 @@ class BuildPortfolio extends React.Component {
                 first_name: 'a',
                 last_name: 'b',
                 email: 'ab@email.com',
-                name: this.name,
-                begin: this.begin,
-                cash: this.cash,
-                benchmark: this.benchmark,
+                name: this.state.name,
+                begin: this.state.begin,
+                cash: this.state.cash,
+                benchmark: this.state.benchmark,
                 trades: []
             }
+            console.log(this.state.lines)
             // only push valid trade inputs
-            for (let i = 0; i < this.lines.length; i++) {
-                let trade = this.lines[i]
+            for (let i = 0; i < this.state.lines.length; i++) {
+                let trade = this.state.lines[i]
+                console.log('trade..')
+                console.log(this.state.lines[i])
                 if(this.checkTradeValid(trade.date, trade.direction, trade.target, trade.percentage)) {
-                    if (i > 1) { // dates of trades should be non-descending
-                        if (Date.parse(trade.date) >= Date.parse(this.trades[this.trades.length - 1].date)) {
-                            newP.trades.push(this.lines[i])
+                    console.log("entered 1st layer")
+                    if (newP.trades.length > 0) { // dates of trades should be non-descending
+                        if (Date.parse(trade.date) >= Date.parse(newP.trades[newP.trades.length - 1].date)) {
+                            console.log("entered last")
+                            newP.trades.push(this.state.lines[i])
                         }
+                    } else {
+                        newP.trades.push(this.state.lines[i])
                     }
                 }
             }
@@ -134,7 +141,7 @@ class BuildPortfolio extends React.Component {
                         required
                         type="text"
                         placeholder="YYYY-MM-DD"
-                        defaultValue="2018-12-31"
+                        defaultValue="2019-03-31"
                         size="lg"
                         onChange={
                             (e) => {
@@ -229,8 +236,8 @@ class BuildPortfolio extends React.Component {
                     <Form.Control
                         required
                         type="text"
-                        placeholder="YYYYMMDD"
-                        defaultValue="20181231"
+                        placeholder="YYYY-MM-DD"
+                        defaultValue="2018-12-31"
                         size="lg"
                         onChange={(e) => { this.setState({begin: e.target.value})}}
                     />

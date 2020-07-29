@@ -26,14 +26,15 @@ class Login extends Component {
             password: this.state.password
         }
         // passing the user object in the login function to be passed to back-end
-        login(user).then(res => {
-            // if (res.error) {
-            //     alert(res.error)
+        login(user)
+            .then(res => {
+                if (res.error) {
+                    alert(res.error)
 
-            // } else {
-                this.props.history.push(`/profile`)
-            // }
-        })
+                } else {
+                    this.props.history.push(`/profile`)
+                }
+        })            
             .catch(error => {
                 console.log(error)
             })

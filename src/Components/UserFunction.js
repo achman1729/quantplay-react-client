@@ -1,4 +1,5 @@
 import api from './api' 
+// import Axios from 'axios'
 
 // the app is connected via the api.js
 
@@ -20,7 +21,7 @@ export const login = user => {
     // we will be setting usertoken inside the local storage with the response.data
     // response.data will contain the token which is the encoded object of our payload
     return api
-      .post('users/login', {
+      .post('/users/login', {
         email: user.email,
         password: user.password
       })

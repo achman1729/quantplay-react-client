@@ -34,7 +34,10 @@ export default function Search() {
         Axios.get(`${tiingoApi + symbol}?${token}`)
         .then(res => {
             console.log(res.data.name)
-            // setName()
+            setName(res.data.name)
+        })
+        .catch(error => {
+            console.log(error)
         })
     }
 
@@ -46,6 +49,8 @@ export default function Search() {
             </form>
             <div>
                 <h1>Name: {name}</h1><h3>Price: {price}</h3>
+                <button>Add to watchlist</button>
+                <button>Add to portfolio</button>
             </div>
         </div>
     )

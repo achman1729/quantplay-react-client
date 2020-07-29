@@ -36,14 +36,31 @@ class BuildPortfolio extends React.Component {
         super(props)
         this.state = {
             validated: false,
-            setValidated: false,
-            lines: testTrades,
-            // temp: null,
+            lines: testTrades, // the trades data
             name: 'myPortfolio',
-            begin: '20161231',
+            begin: '2016-12-31', // should work with Date.parse()
             cash: 100000,
             benchmark: 0
         }
+    }
+
+    checkInitValid() {
+        let validDate = !isNaN(Date.parse(this.begin))
+        let validName = (this.name != '')
+        let validCash = (this.cash > 0)
+        let validBenchmark = (this.benchmark >= 0)
+        if (validDate && validName && validCash && validBenchmark) {
+            this.validated = true
+            return true
+        }
+    }
+
+    checkTradeValid(date, direction, target, percentage) {
+        let validDate = !isNaN(Date.parse(date)) && (Date.parse(date) >= Date.parse(this.begin))
+        let validDirection = (direction == 'long' || direction == 'short')
+        let validTarget = true // to be worked on checking if it is a valid symbol 
+        let validPercentage = (percentage >= 0 && percentage <= 1)
+        return validDate && validDirection && validTarget && validPercentage
     }
 
     handleSubmit = (event) => {
@@ -55,24 +72,38 @@ class BuildPortfolio extends React.Component {
         // access to form data
 
         event.preventDefault()
-
-        const newP = {
-            // first_name: p.first_name,
-            // last_name: p.last_name,
-            // email: p.email,
-            first_name: 'a',
-            last_name: 'b',
-            email: 'ab@email.com',
-            name: this.name,
-            begin: this.begin,
-            cash: this.cash,
-            benchmark: this.benchmark
+        if (this.checkInitValid) {
+            let newP = {
+                // first_name: p.first_name,
+                // last_name: p.last_name,
+                // email: p.email,
+                first_name: 'a',
+                last_name: 'b',
+                email: 'ab@email.com',
+                name: this.name,
+                begin: this.begin,
+                cash: this.cash,
+                benchmark: this.benchmark,
+                trades: []
+            }
+            // only push valid trade inputs
+            for (let i = 0; i < this.lines.length; i++) {
+                let trade = this.lines[i]
+                if(this.checkTradeValid(trade.date, trade.direction, trade.target, trade.percentage)) {
+                    if (i > 1) { // dates of trades should be non-descending
+                        if (Date.parse(trade.date) >= Date.parse(this.trades[this.trades.length - 1].date)) {
+                            newP.trades.push(this.lines[i])
+                        }
+                    }
+                }
+            }
+    
+            replaceP(newP).then(res => {
+                // this.props.history.push(`/login`)
+                console.log('replaceP executed')
+            })
         }
-
-        replaceP(newP).then(res => {
-            // this.props.history.push(`/login`)
-            console.log('replaceP executed')
-        })
+        
 
         
     }
@@ -92,8 +123,8 @@ class BuildPortfolio extends React.Component {
 
     // new row of trade to be append
     Trade(i) {
-            console.log(i.num)
-            console.log(i.da)
+            // console.log(i.num)
+            // console.log(i.da)
             return (
             <Form noValidate id={"form" + i.num}>          
                 <Form.Row className="justify-content-center text-center">
@@ -102,10 +133,19 @@ class BuildPortfolio extends React.Component {
                     <Form.Control
                         required
                         type="text"
-                        placeholder="YYYYMMDD"
-                        defaultValue="20181231"
+                        placeholder="YYYY-MM-DD"
+                        defaultValue="2018-12-31"
                         size="lg"
-                        
+                        onChange={
+                            (e) => {
+                                    let items = [...i.da.state.lines] // shallow copy of array
+                                    let item = {...items[i.num]} // shallow copy of item
+                                    item.date = e.target.value // date string
+                                    items[i.num] = item // mutating
+                                    i.da.setState((states, props) => ({lines: items})) // faster update with setState((states, props) => ({}))
+                                    console.log('update date?' + e.target.value)
+                                    }
+                            }
                     />
                     <Form.Control.Feedback type="invalid">
                         Please provide a valid date.
@@ -113,7 +153,17 @@ class BuildPortfolio extends React.Component {
                     </Form.Group>
                     <Form.Group as={Col} md="2" controlId="validationCustom02" className="justify-content-center">
                     <Form.Label>Long/Short</Form.Label>
-                    <Form.Check type="switch" id={"switch" + i.num} label="Short" size="lg" onChange={(e) => {console.log(e.target.parentElement)}} />
+                    <Form.Check type="switch" id={"switch" + i.num} label="Short" size="lg" onChange={
+                            (e) => {
+                                    let items = [...i.da.state.lines] // shallow copy of array
+                                    let item = {...items[i.num]} // shallow copy of item
+                                    item.direction = (e.target.value == "on") ? "short" : "long" // date string
+                                    items[i.num] = item // mutating
+                                    i.da.setState((states, props) => ({lines: items})) // faster update with setState((states, props) => ({}))
+                                    console.log('update direction?' + e.target.value)
+                                    }
+                            } 
+                    />
                     <Form.Control.Feedback type="invalid">
                         Long by default.
                     </Form.Control.Feedback>
@@ -122,15 +172,13 @@ class BuildPortfolio extends React.Component {
                     <Form.Label>Target</Form.Label>
                     <Form.Control as="select" size="lg" custom onChange={
                             (e) => {
-                                    i.da.setState({temp: e.target.value}) // async way, not guarranteed to be instant execution
+                                    // i.da.setState({temp: e.target.value}) // async way, not guarranteed to be instant execution
                                     let items = [...i.da.state.lines] // shallow copy of array
                                     let item = {...items[i.num]} // shallow copy of item
-                                    item.target = e.target.value
+                                    item.target = e.target.value // targeted stock symbol
                                     items[i.num] = item // mutating
                                     i.da.setState((states, props) => ({lines: items})) // faster update with setState((states, props) => ({}))
-                                    console.log('muted?')
-                                    
-                                    
+                                    console.log('update target?' + e.target.value)
                                     }
                             } 
                         >
@@ -144,7 +192,17 @@ class BuildPortfolio extends React.Component {
                     </Form.Group>
                     <Form.Group as={Col} md="3" controlId="validationCustom04">
                     <Form.Label>Percentage</Form.Label>
-                    <Form.Control type="range" custom onChange={(e) => console.log(e.target.value)}/>
+                    <Form.Control type="range" custom onChange={
+                            (e) => {
+                                    let items = [...i.da.state.lines] // shallow copy of array
+                                    let item = {...items[i.num]} // shallow copy of item
+                                    item.percentage = Number(e.target.value)/100 // percentage number
+                                    items[i.num] = item // mutating
+                                    i.da.setState((states, props) => ({lines: items})) // faster update with setState((states, props) => ({}))
+                                    console.log('update percentage?' + e.target.value)
+                                    }
+                            }
+                            />
                     <Form.Control.Feedback type="invalid">
                         Percentage from 0 to 100.
                     </Form.Control.Feedback>
@@ -174,7 +232,7 @@ class BuildPortfolio extends React.Component {
                         placeholder="YYYYMMDD"
                         defaultValue="20181231"
                         size="lg"
-                        onChange={(e) => {this.setState((states, props) => ({begin: e.target.value}))}}
+                        onChange={(e) => { this.setState({begin: e.target.value})}}
                     />
                     <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                     </Form.Group>
@@ -186,7 +244,7 @@ class BuildPortfolio extends React.Component {
                         placeholder="Cash"
                         defaultValue="100000"
                         size="lg"
-                        onChange={(e) => {this.setState((states, props) => ({cash: Number(e.target.value)}))}}
+                        onChange={(e) => {this.setState({cash: Number(e.target.value)})}}
                     />
                     <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                     </Form.Group>
@@ -197,7 +255,7 @@ class BuildPortfolio extends React.Component {
                         placeholder="Portfolio Name"
                         size="lg"
                         required
-                        onChange={(e) => {this.setState((states, props) => ({name: e.target.value}))}}
+                        onChange={(e) => {this.setState({name: e.target.value})}}
                         />
                         <Form.Control.Feedback type="invalid">
                         Descriptional of stradegy
@@ -212,7 +270,7 @@ class BuildPortfolio extends React.Component {
                         size="lg"
                         aria-describedby="inputGroupPrepend"
                         required
-                        onChange={(e) => {this.setState((states, props) => ({benchmark: Number(e.target.value)/100}))}}
+                        onChange={(e) => {this.setState({benchmark: Number(e.target.value)/100})}}
                         />
                         <InputGroup.Prepend>
                         <InputGroup.Text id="inputGroupPrepend">%</InputGroup.Text>

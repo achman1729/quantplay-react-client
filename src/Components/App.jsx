@@ -8,14 +8,14 @@ import Login from "./Login"
 import Register from "./Register"
 import Profile from "./Profile"
 import SearchBar from './Search'
-
+import WatchlistAsync from "./WatchlistAsync"
 function App() {
   return (
     <>
     <BrowserRouter>
       <Header />
       <Switch>
-        <Route exact path="/watchlist" component={Watchlist} />
+        <Route exact path="/watchlist" component={WatchlistAsync} />
         <Route exact path="/portfolio" component={Portfolio} />
         {/* <Route exact path="/post" component={Post} /> */}
         <Route exact path="/search" component={SearchBar} />

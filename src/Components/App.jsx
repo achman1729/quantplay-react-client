@@ -7,7 +7,6 @@ import Login from "./Login"
 import Register from "./Register"
 import Profile from "./Profile"
 import SearchBar from './Search'
-<<<<<<< HEAD
 // import StateContext from './store'
 // import stateReducer from './stateReducer'
 
@@ -59,9 +58,6 @@ const initialState = { symbol: undefined, price: undefined, name: undefined, sta
 
 export const StateContext = React.createContext()
 
-=======
-import WatchlistAsync from "./WatchlistAsync"
->>>>>>> c848e9cb167b95cc935994dee1dfdda1fec2b2c1
 function App() {
   // create a reducer
 
@@ -69,11 +65,11 @@ function App() {
 
   return (
     <>
-<<<<<<< HEAD
     <StateContext.Provider value={{state, dispatch}}>
       <BrowserRouter>
         <Header />
         <Switch>
+          <Route exact path="/watchlist" component={WatchlistAsync} />
           <Route exact path="/watchlist" component={Watchlist} />
           <Route exact path="/portfolio" component={Portfolio} />
           <Route exact path="/search" component={SearchBar} />
@@ -83,20 +79,6 @@ function App() {
         </Switch>
       </BrowserRouter>
     </StateContext.Provider>
-=======
-    <BrowserRouter>
-      <Header />
-      <Switch>
-        <Route exact path="/watchlist" component={WatchlistAsync} />
-        <Route exact path="/portfolio" component={Portfolio} />
-        {/* <Route exact path="/post" component={Post} /> */}
-        <Route exact path="/search" component={SearchBar} />
-        <Route exact path="/login" component={Login} />
-        <Route exact path="/register" component={Register} />
-        <Route exact path="/profile" component={Profile} />
-      </Switch>
-    </BrowserRouter>
->>>>>>> c848e9cb167b95cc935994dee1dfdda1fec2b2c1
     </>
   )
 }

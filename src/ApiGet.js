@@ -1,6 +1,6 @@
 import moment from "moment"
 import { Collection, TimeSeries, TimeEvent, TimeRange, IndexedEvent } from "pondjs"
-
+import statsStock from './statsStock'
 
 // fetch data from tiingo api
 function ApiGet(symbol, dateStr1, dateStr2) {
@@ -29,7 +29,7 @@ function ApiGet(symbol, dateStr1, dateStr2) {
     const collection = new Collection(events)
     const sortedCollection = collection.sortByTime()
     const series = new TimeSeries({ name, columns, collection: sortedCollection })
-    
+    const stats = statsStock(series)
     // to seriesVolumn as a TimeSeries of volumn info
     const volumeEvents = stockSeries.map(item => {
         const index = item.date.replace(/\//g, "-")
@@ -50,7 +50,7 @@ function ApiGet(symbol, dateStr1, dateStr2) {
     const companyName = tempMeta.name
     const ticker = tempMeta.ticker
 
-    return {'series': series, 'seriesVolume': seriesVolume, 'companyName': companyName, 'ticker': ticker, 'description': description}
+    return {'series': series, 'seriesVolume': seriesVolume, 'companyName': companyName, 'ticker': ticker, 'description': description, 'stats': stats}
     // to call the chart component, use the following code in other components
     // const ele = <PriceVol series={series} seriesVolume={seriesVolume} />
 }

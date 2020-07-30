@@ -16,7 +16,7 @@ export default function CardStock(props) {
                 <Col xs={3} className="justify-content-center h3">{props.companyName}</Col>
                 <Col xs={9}>
                     <Row className="h3">
-                        <Col id="rtday"> 1.00% </Col><Col id="rtmonth"> 2.00% </Col><Col id="rtyear"> 3.00% </Col>
+                        <Col id="rtday"> {Math.round((props.stats.dayReturn + Number.EPSILON) * 10000) / 100}% </Col><Col id="rtmonth"> {Math.round((props.stats.rollingMonthReturn + Number.EPSILON) * 10000) / 100}% </Col><Col id="rtyear"> {Math.round((props.stats.yearReturn + Number.EPSILON) * 10000) / 100}% </Col>
                     </Row>
                     <Row>
                         <Col> day </Col><Col> month </Col><Col> year </Col>

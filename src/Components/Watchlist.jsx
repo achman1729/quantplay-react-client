@@ -3,6 +3,8 @@ import CardStock from './Card'
 import ApiGet from '../ApiGet'
 
 export default function Watchlist() {
+    // destructure the props
+
     const { series, seriesVolume, companyName, ticker, description } = ApiGet('aapl', '2019-01-01', '2019-12-31')
     return (
         <div>

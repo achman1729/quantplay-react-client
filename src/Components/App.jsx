@@ -71,7 +71,7 @@ function App() {
         <Header />
         <Switch>
           <Route exact path="/watchlist" component={WatchlistAsync} />
-          <Route exact path="/watchlist" component={Watchlist} />
+          {/* <Route exact path="/watchlist" component={Watchlist} /> */}
           <Route exact path="/portfolio" component={Portfolio} />
           <Route exact path="/search" component={SearchBar} />
           <Route exact path="/login" component={Login} />

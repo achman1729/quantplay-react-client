@@ -7,6 +7,7 @@ import Login from "./Login"
 import Register from "./Register"
 import Profile from "./Profile"
 import SearchBar from './Search'
+import WatchlistAsync from "./WatchlistAsync"
 // import StateContext from './store'
 // import stateReducer from './stateReducer'
 

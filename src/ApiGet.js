@@ -2,6 +2,9 @@ import moment from "moment"
 import { Collection, TimeSeries, TimeEvent, TimeRange, IndexedEvent } from "pondjs"
 import statsStock from './statsStock'
 
+
+
+
 // fetch data from tiingo api
 function ApiGet(symbol, dateStr1, dateStr2) {
     const fetch = require("node-fetch")
@@ -15,6 +18,7 @@ function ApiGet(symbol, dateStr1, dateStr2) {
     // building timeseries
     const stockSeries = require("./sampleJSON.json") // sample in tiingo format for test
     // const stockSeries = temp // fetch from tiingo api
+    
 
     // to series as a TimeSeries of (close)price info
     const name = symbol

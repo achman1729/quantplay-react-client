@@ -1,7 +1,7 @@
 import Axios from 'axios'
 
 export default Axios.create({
-    baseURL: 'https://pacific-headland-14360.herokuapp.com/'
+    baseURL: 'https://api.tiingo.com/tiingo/'
     // baseURL: 'http://localhost:8000/'
 
 })

@@ -6,7 +6,7 @@ import {StateContext} from './App'
 
 export default function Search() {
     const token = "token=cb0fa4bee45c5b25e4b7cdc1c74b3e54dd75720e"
-    const tiingoApi = "https://api.tiingo.com/tiingo/daily/"
+    const tiingoApi = "/daily/"
     const [visible, setVisible] = useState(false)
 
     let {state, dispatch} = useContext(StateContext)

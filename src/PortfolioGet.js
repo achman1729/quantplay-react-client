@@ -236,7 +236,7 @@ function PortfolioData(portfolioName) {
 
     let ev = fund.eval()
     let stats = fund.stats()
-    console.log(stats)
+    // console.log(stats)
 
     // create a series of values (type TimeSeries) which would be used by PortfolioChart
     const name = 'myfund1'
